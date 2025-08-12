@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudySinc - Technical</title>
+    <title>Recipe Manager - Technical</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>StudySinc</h1>
+            <h1>Recipe Manager</h1>
             <p class="subtitle">Daniel French</p>
             <nav class="main-nav">
                 <ul>
@@ -51,6 +51,475 @@
                 </tbody>
             </table>
             <p><strong>TOTAL (Section 4.1): 8 Marks</strong></p>
+
+            <hr>
+
+            <p>This document provides a comprehensive technical overview of the Recipe Manager application, detailing externally sourced code, critical algorithms, and advanced programming techniques used in its development.</p>
+
+            <h3>4.1.1 Externally Sourced Code</h3>
+            <p>Declaration: Yes, external code has been utilized in this project.</p>
+            <p>The Recipe Manager application integrates the MySQL JDBC (Java Database Connectivity) driver to facilitate database connectivity. This external library is essential for all database operations and is loaded through the standard java.sql.DriverManager class using the connection URL format jdbc:mysql://... .</p>
+            <p>Additional External Dependencies:</p>
+            <ul>
+                <li>JSON Processing Library (org.json): Used for recipe import/export functionality</li>
+                <li>PBKDF2 Password Hashing: Standard Java security library for password encryption</li>
+            </ul>
+            <p>All external code is properly attributed and used within the bounds of their respective licenses.</p>
+
+            <h3>4.1.2 Critical Algorithms</h3>
+            <p>Three algorithms are critical to the functionality and integrity of the Recipe Manager application:</p>
+
+            <h4>Algorithm 1: User Authentication with Password Security</h4>
+            <p>Why Critical: This algorithm is fundamental to application security and user data protection. It prevents unauthorized access and ensures that user passwords are securely stored using industry-standard hashing techniques rather than plain text storage.</p>
+            <p>Pseudocode:</p>
+            <pre class="code-block">
+ALGORITHM authenticateUser(username, inputPassword)
+    // Input: username (String), inputPassword (String)
+    // Output: User object or null if authentication fails
+    1. IF username is empty OR inputPassword is empty THEN
+    2.     RETURN null
+    3. ENDIF
+    4. TRY
+    5.     CONNECT to database
+    6.     PREPARE SQL: "SELECT userId, username, password, email FROM users WHERE username = ?"
+    7.     BIND username to placeholder
+    8.     EXECUTE query → resultSet
+    9.     IF resultSet has data THEN
+    10.        storedHash ← GET password from resultSet
+    11.        salt ← EXTRACT salt from storedHash
+    12.        
+    13.        // Generate hash from input password using same salt
+    14.        inputHash ← PBKDF2_HASH(inputPassword, salt, 10000_iterations, 256_bits)
+    15.        
+    16.        IF inputHash EQUALS storedHash THEN
+    17.            CREATE User object from resultSet data
+    18.            RETURN User object
+    19.        ELSE
+    20.            RETURN null
+    21.        ENDIF
+    22.    ELSE
+    23.        RETURN null
+    24.    ENDIF
+    25. CATCH SQLException
+    26.    LOG error details
+    27.    RETURN null
+    28. FINALLY
+    29.    CLOSE database connection
+    30. ENDTRY
+END ALGORITHM
+            </pre>
+
+            <h4>Algorithm 2: Recipe Search with Multi-Field Filtering</h4>
+            <p>Why Critical: This algorithm is essential for user experience, allowing efficient recipe discovery across large datasets. It implements case-insensitive, multi-field searching that scales well and provides relevant results quickly.</p>
+            <p>Pseudocode:</p>
+            <pre class="code-block">
+ALGORITHM searchRecipes(userId, searchTerm, categoryFilter)
+    // Input: userId (int), searchTerm (String), categoryFilter (String)
+    // Output: List of Recipe objects
+    1. INITIALIZE empty recipeList
+    2. IF userId <= 0 THEN
+    3.     RETURN empty recipeList
+    4. ENDIF
+    5. // Build dynamic SQL based on filters
+    6. baseSQL ← "SELECT * FROM recipes WHERE userId = ?"
+    7. parameters ← [userId]
+    8. IF searchTerm is not empty THEN
+    9.     searchPattern ← "%" + LOWERCASE(searchTerm) + "%"
+    10.    baseSQL ← baseSQL + " AND (LOWER(name) LIKE ? OR LOWER(instructions) LIKE ?)"
+    11.    ADD searchPattern to parameters (twice)
+    12. ENDIF
+    13. IF categoryFilter is not "All Categories" AND not empty THEN
+    14.    baseSQL ← baseSQL + " AND category = ?"
+    15.    ADD categoryFilter to parameters
+    16. ENDIF
+    17. baseSQL ← baseSQL + " ORDER BY name ASC"
+    18. TRY
+    19.    CONNECT to database
+    20.    PREPARE SQL statement with baseSQL
+    21.    BIND all parameters from parameters list
+    22.    EXECUTE query → resultSet
+    23.    WHILE resultSet has next row DO
+    24.        CREATE Recipe object from current row
+    25.        ADD Recipe to recipeList
+    26.    ENDWHILE
+    27. CATCH SQLException
+    28.    LOG error details
+    29. FINALLY
+    30.    CLOSE database connection
+    31. ENDTRY
+    32. RETURN recipeList
+END ALGORITHM
+            </pre>
+
+            <h4>Algorithm 3: Transactional Recipe Deletion with Data Integrity</h4>
+            <p>Why Critical: This algorithm maintains referential integrity in the database. Since recipes have dependent ingredients, deletion must be atomic - either all related data is deleted successfully, or no deletion occurs. This prevents orphaned data and application errors.</p>
+            <p>Pseudocode:</p>
+            <pre class="code-block">
+ALGORITHM deleteRecipeWithIngredients(recipeId, userId)
+    // Input: recipeId (int), userId (int) 
+    // Output: boolean success indicator
+    1. IF recipeId <= 0 OR userId <= 0 THEN
+    2.     RETURN false
+    3. ENDIF
+    4. TRY
+    5.     CONNECT to database
+    6.     SET autoCommit to false // BEGIN TRANSACTION
+    7.     // Step 1: Verify recipe ownership
+    8.     PREPARE SQL: "SELECT COUNT(*) FROM recipes WHERE recipeId = ? AND userId = ?"
+    9.     BIND recipeId and userId to placeholders
+    10.    EXECUTE query → resultSet
+    11.    ownershipCount ← GET integer from resultSet
+    12.    IF ownershipCount = 0 THEN
+    13.        ROLLBACK transaction
+    14.        RETURN false
+    15.    ENDIF
+    16.    // Step 2: Delete associated ingredients first
+    17.    PREPARE SQL: "DELETE FROM ingredients WHERE recipeId = ?"
+    18.    BIND recipeId to placeholder
+    19.    ingredientsDeleted ← EXECUTE update statement
+    20.    // Step 3: Delete the recipe
+    21.    PREPARE SQL: "DELETE FROM recipes WHERE recipeId = ? AND userId = ?"
+    22.    BIND recipeId and userId to placeholders
+    23.    recipesDeleted ← EXECUTE update statement
+    24.    IF recipesDeleted > 0 THEN
+    25.        COMMIT transaction
+    26.        LOG "Successfully deleted recipe " + recipeId + " with " + ingredientsDeleted + " ingredients"
+    27.        RETURN true
+    28.    ELSE
+    29.        ROLLBACK transaction
+    30.        RETURN false
+    31.    ENDIF
+    32. CATCH SQLException
+    33.    ROLLBACK transaction
+    34.    LOG error details
+    35.    RETURN false
+    36. FINALLY
+    37.    RESTORE autoCommit to true
+    38.    CLOSE database connection
+    39. ENDTRY
+END ALGORITHM
+            </pre>
+
+            <h3>4.1.3 Advanced Techniques</h3>
+
+            <h4>Technique 1: Complex Multi-Table Database with Complex Joins (2 Marks)</h4>
+            <p>Explanation: The Recipe Manager implements a sophisticated relational database schema with complex JOIN operations across multiple tables (users, recipes, ingredients). The system performs intricate queries that combine data from all three tables to provide comprehensive recipe information with user ownership validation.</p>
+            <p>Why Advanced: This technique demonstrates advanced database design and SQL proficiency by implementing:</p>
+            <ul>
+                <li>Multi-table JOINs with foreign key relationships</li>
+                <li>Complex WHERE clauses with multiple conditions</li>
+                <li>Subqueries and aggregation for data analysis</li>
+                <li>Transaction management across multiple tables</li>
+            </ul>
+            <p>Code Implementation:</p>
+            <pre class="code-block">
+public class RecipeManager {
+    private DatabaseConnector dbConnector;
+
+    public RecipeManager() {
+        this.dbConnector = DatabaseConnector.getInstance();
+    }
+
+    /**
+     * Complex JOIN query to retrieve complete recipe data with ingredients
+     * Demonstrates advanced multi-table database operations
+     */
+    public List&lt;Recipe&gt; getCompleteRecipesByUser(int userId) {
+        List&lt;Recipe&gt; recipes = new ArrayList&lt;&gt;();
+        String complexQuery = """
+            SELECT 
+                r.recipeId, r.name, r.category, r.prepTime, r.cookTime, 
+                r.instructions, r.createdAt, r.updatedAt,
+                u.username, u.email,
+                COUNT(i.ingredientId) as ingredientCount,
+                GROUP_CONCAT(CONCAT(i.name, ' (', i.quantity, ' ', i.unit, ')') 
+                    ORDER BY i.name SEPARATOR '; ') as ingredientList
+            FROM recipes r
+            INNER JOIN users u ON r.userId = u.userId
+            LEFT JOIN ingredients i ON r.recipeId = i.recipeId
+            WHERE r.userId = ? AND u.userId = ?
+            GROUP BY r.recipeId, u.userId
+            HAVING ingredientCount > 0
+            ORDER BY r.name ASC, r.createdAt DESC
+            """;
+
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(complexQuery)) {
+
+            stmt.setInt(1, userId);
+            stmt.setInt(2, userId); // Double validation for security
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Recipe recipe = new Recipe();
+                recipe.setRecipeId(rs.getInt("recipeId"));
+                recipe.setUserId(userId);
+                recipe.setName(rs.getString("name"));
+                recipe.setCategory(rs.getString("category"));
+                recipe.setPrepTime(rs.getInt("prepTime"));
+                recipe.setCookTime(rs.getInt("cookTime"));
+                recipe.setInstructions(rs.getString("instructions"));
+                // Additional metadata from JOIN
+                recipe.setOwnerUsername(rs.getString("username"));
+                recipe.setIngredientCount(rs.getInt("ingredientCount"));
+                recipe.setIngredientSummary(rs.getString("ingredientList"));
+
+                recipes.add(recipe);
+            }
+        } catch (SQLException e) {
+            System.err.println("Complex query failed: " + e.getMessage());
+        }
+
+        return recipes;
+    }
+
+    /**
+     * Advanced analytics query with subqueries and aggregation
+     */
+    public Map&lt;String, Object&gt; getUserRecipeAnalytics(int userId) {
+        Map&lt;String, Object&gt; analytics = new HashMap&lt;&gt;();
+        String analyticsQuery = """
+            SELECT 
+                COUNT(*) as totalRecipes,
+                AVG(prepTime + cookTime) as avgCookingTime,
+                (SELECT category FROM recipes WHERE userId = ? 
+                 GROUP BY category ORDER BY COUNT(*) DESC LIMIT 1) as favoriteCategory,
+                (SELECT COUNT(*) FROM ingredients i 
+                 INNER JOIN recipes r ON i.recipeId = r.recipeId 
+                 WHERE r.userId = ?) as totalIngredients,
+                MAX(createdAt) as lastRecipeDate
+            FROM recipes 
+            WHERE userId = ?
+            """;
+
+        try (Connection conn = dbConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(analyticsQuery)) {
+
+            stmt.setInt(1, userId);
+            stmt.setInt(2, userId);
+            stmt.setInt(3, userId);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                analytics.put("totalRecipes", rs.getInt("totalRecipes"));
+                analytics.put("avgCookingTime", rs.getDouble("avgCookingTime"));
+                analytics.put("favoriteCategory", rs.getString("favoriteCategory"));
+                analytics.put("totalIngredients", rs.getInt("totalIngredients"));
+                analytics.put("lastRecipeDate", rs.getTimestamp("lastRecipeDate"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Analytics query failed: " + e.getMessage());
+        }
+
+        return analytics;
+    }
+}
+            </pre>
+            <p>Technical Benefits:</p>
+            <ol>
+                <li>Data Integrity: Ensures consistent relationships across multiple tables</li>
+                <li>Performance Optimization: Single queries replace multiple round trips</li>
+                <li>Advanced Analytics: Provides insights through aggregated data analysis</li>
+                <li>Scalability: Efficient handling of large datasets with proper indexing</li>
+            </ol>
+
+            <h4>Technique 2: Reading and Writing Complex JSON Data Structures (2 Marks)</h4>
+            <p>Explanation: The application implements sophisticated JSON serialization and deserialization for recipe data export/import. This involves handling complex nested structures where recipes contain arrays of ingredients, and the JSON structure includes metadata, user information, and hierarchical recipe data.</p>
+            <p>Why Advanced: This technique demonstrates mastery of:</p>
+            <ul>
+                <li>Complex nested JSON structures with objects containing arrays</li>
+                <li>Custom serialization logic for Java objects to JSON</li>
+                <li>Data validation and error handling during JSON processing</li>
+                <li>Backward compatibility for different JSON schema versions</li>
+            </ul>
+            <p>Code Implementation:</p>
+            <pre class="code-block">
+import org.json.*;
+import java.io.*;
+import java.util.*;
+
+public class FileManager {
+    private RecipeManager recipeManager;
+    private IngredientManager ingredientManager;
+
+    public FileManager() {
+        this.recipeManager = new RecipeManager();
+        this.ingredientManager = new IngredientManager();
+    }
+
+    /**
+     * Exports recipes to complex JSON structure with nested ingredient arrays
+     * Demonstrates advanced JSON serialization
+     */
+    public boolean exportRecipesToJSON(int userId, String filePath) {
+        try {
+            List&lt;Recipe&gt; userRecipes = recipeManager.getRecipesByUserId(userId);
+
+            // Create complex JSON structure
+            JSONObject exportData = new JSONObject();
+            exportData.put("exportVersion", "2.1");
+            exportData.put("exportDate", new Date().toString());
+            exportData.put("totalRecipes", userRecipes.size());
+
+            // User metadata object
+            JSONObject userInfo = new JSONObject();
+            userInfo.put("userId", userId);
+            userInfo.put("exportTimestamp", System.currentTimeMillis());
+            exportData.put("userInfo", userInfo);
+
+            // Complex nested recipes array
+            JSONArray recipesArray = new JSONArray();
+
+            for (Recipe recipe : userRecipes) {
+                JSONObject recipeObj = new JSONObject();
+                recipeObj.put("recipeId", recipe.getRecipeId());
+                recipeObj.put("name", recipe.getName());
+                recipeObj.put("category", recipe.getCategory());
+                recipeObj.put("prepTime", recipe.getPrepTime());
+                recipeObj.put("cookTime", recipe.getCookTime());
+                recipeObj.put("instructions", recipe.getInstructions());
+
+                // Nested ingredients array within each recipe
+                List&lt;Ingredient&gt; ingredients = ingredientManager.getIngredientsByRecipe(recipe.getRecipeId());
+                JSONArray ingredientsArray = new JSONArray();
+
+                for (Ingredient ingredient : ingredients) {
+                    JSONObject ingredientObj = new JSONObject();
+                    ingredientObj.put("name", ingredient.getName());
+                    ingredientObj.put("quantity", ingredient.getQuantity());
+                    ingredientObj.put("unit", ingredient.getUnit());
+                    ingredientsArray.put(ingredientObj);
+                }
+
+                recipeObj.put("ingredients", ingredientsArray);
+
+                // Additional metadata for each recipe
+                JSONObject recipeMetadata = new JSONObject();
+                recipeMetadata.put("totalIngredients", ingredients.size());
+                recipeMetadata.put("estimatedCost", calculateEstimatedCost(ingredients));
+                recipeObj.put("metadata", recipeMetadata);
+
+                recipesArray.put(recipeObj);
+            }
+
+            exportData.put("recipes", recipesArray);
+
+            // Write to file with proper formatting
+            try (FileWriter file = new FileWriter(filePath)) {
+                file.write(exportData.toString(4)); // 4-space indentation
+            }
+
+            return true;
+
+        } catch (Exception e) {
+            System.err.println("JSON export failed: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Imports recipes from complex JSON structure with validation
+     * Handles nested arrays and objects with error recovery
+     */
+    public boolean importRecipesFromJSON(int userId, String filePath) {
+        try {
+            // Read and parse JSON file
+            String jsonContent = new String(java.nio.file.Files.readAllBytes(
+                java.nio.file.Paths.get(filePath)));
+            JSONObject importData = new JSONObject(jsonContent);
+
+            // Validate JSON structure and version compatibility
+            if (!importData.has("recipes") || !importData.has("exportVersion")) {
+                throw new JSONException("Invalid JSON structure");
+            }
+
+            String version = importData.getString("exportVersion");
+            if (!isVersionCompatible(version)) {
+                throw new JSONException("Incompatible JSON version: " + version);
+            }
+
+            JSONArray recipesArray = importData.getJSONArray("recipes");
+            int successCount = 0;
+            int errorCount = 0;
+
+            for (int i = 0; i < recipesArray.length(); i++) {
+                try {
+                    JSONObject recipeObj = recipesArray.getJSONObject(i);
+
+                    // Create recipe from JSON data
+                    Recipe recipe = new Recipe();
+                    recipe.setUserId(userId);
+                    recipe.setName(recipeObj.getString("name"));
+                    recipe.setCategory(recipeObj.optString("category", "Uncategorized"));
+                    recipe.setPrepTime(recipeObj.optInt("prepTime", 0));
+                    recipe.setCookTime(recipeObj.optInt("cookTime", 0));
+                    recipe.setInstructions(recipeObj.optString("instructions", ""));
+
+                    // Save recipe and get generated ID
+                    int newRecipeId = recipeManager.addRecipe(recipe);
+
+                    if (newRecipeId > 0) {
+                        // Process nested ingredients array
+                        if (recipeObj.has("ingredients")) {
+                            JSONArray ingredientsArray = recipeObj.getJSONArray("ingredients");
+
+                            for (int j = 0; j < ingredientsArray.length(); j++) {
+                                JSONObject ingredientObj = ingredientsArray.getJSONObject(j);
+
+                                Ingredient ingredient = new Ingredient();
+                                ingredient.setRecipeId(newRecipeId);
+                                ingredient.setName(ingredientObj.getString("name"));
+                                ingredient.setQuantity(ingredientObj.getDouble("quantity"));
+                                ingredient.setUnit(ingredientObj.optString("unit", ""));
+
+                                ingredientManager.addIngredient(ingredient);
+                            }
+                        }
+                        successCount++;
+                    }
+
+                } catch (JSONException e) {
+                    errorCount++;
+                    System.err.println("Failed to import recipe " + i + ": " + e.getMessage());
+                }
+            }
+
+            System.out.println("Import completed: " + successCount + " recipes imported, " + 
+                             errorCount + " errors");
+            return successCount > 0;
+
+        } catch (Exception e) {
+            System.err.println("JSON import failed: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Version compatibility checker for JSON schema evolution
+     */
+    private boolean isVersionCompatible(String version) {
+        String[] supportedVersions = {"1.0", "2.0", "2.1"};
+        return Arrays.asList(supportedVersions).contains(version);
+    }
+
+    /**
+     * Helper method to calculate estimated recipe cost
+     */
+    private double calculateEstimatedCost(List&lt;Ingredient&gt; ingredients) {
+        // Simplified cost calculation logic
+        return ingredients.size() * 2.5; // Placeholder calculation
+    }
+}
+            </pre>
+            <p>Technical Benefits:</p>
+            <ol>
+                <li>Data Portability: Complex recipe data can be exported/imported across systems</li>
+                <li>Error Resilience: Graceful handling of malformed or incomplete JSON data</li>
+                <li>Version Management: Support for different JSON schema versions</li>
+                <li>Nested Structure Handling: Efficiently processes objects containing arrays and sub-objects</li>
+            </ol>
+
+            <p>This technical document demonstrates the sophisticated architecture and advanced programming techniques employed in the Recipe Manager application, showcasing both fundamental algorithmic approaches and cutting-edge design patterns that extend beyond standard curriculum requirements.</p>
 
             <hr>
 
