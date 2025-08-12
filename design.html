@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Manager - Design</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Recipe Manager</h1>
+            <p class="subtitle">Application Design Document</p>
+             <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="specification.html">Specification</a></li>
+                    <li><a href="design.html">Design</a></li>
+                    <li><a href="coding.html">Development</a></li>
+                    <li><a href="technical.html">Testing</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <h1 id="design-document">Design Document</h1>
+            <ul>
+                <li>2.1 User Interface Design</li>
+                <li>2.4 Secondary Storage Design</li>
+                <li>2.5 Explanation of Secondary Storage Design</li>
+                <li>2.6 Explanation of how Primary Data Structures relate to Secondary Storage</li>
+            </ul>
+
+            <h2>2.1 User Interface Design</h2>
+            <h3>Application Window Structure</h3>
+
+            <h4>Main Window (<code>Main.java</code>)</h4>
+            <p><strong>Primary Container:</strong></p>
+            <ul>
+                <li><code>JFrame</code><strong>(frame)</strong>: Main application window titled "Recipe Manager"</li>
+                <li><strong>Dimensions</strong>: 1000x700 pixels, resizable</li> 
+                <li><strong>Layout</strong>: CardLayout for dynamic screen switching</li>
+                <li><strong>State Management</strong>: Handles transition between authentication and main application states</li>
+            </ul>
+
+            <h4>Sign-In Page (<code>SignInPage.java</code>)</h4>
+            <p><strong>Layout Structure:</strong></p>
+            <pre><code>
+┌─────────────────────────────────────┐
+│         RECIPE MANAGER LOGIN        │
+│  ┌─────────────────────────────────┐│
+│  │ Username: [__________________]  ││
+│  │ Password: [__________________]  ││
+│  │                                 ││
+│  │     [Login]    [Register]       ││
+│  │                                 ││
+│  │ Error: [Error message display]  ││
+│  │ Loading: [● ● ●]                ││
+│  └─────────────────────────────────┘│
+└─────────────────────────────────────┘
+            </code></pre>
+
+            <p><strong>GUI Components:</strong></p>
+            <ol>
+                <li><strong><code>JPanel</code> (mainPanel)</strong><ul>
+                    <li><strong>Function:</strong> Primary container for sign-in interface</li>
+                    <li><strong>Layout:</strong> GridBagLayout for centered component positioning</li>
+                </ul></li>
+                <li><strong><code>JTextField</code> (usernameField)</strong><ul>
+                    <li><strong>Data Type:</strong> String (username)</li>
+                    <li><strong>Validation:</strong> Non-empty username validation</li>
+                    <li><strong>Placeholder:</strong> "Enter your username"</li>
+                </ul></li>
+                <li><strong><code>JPasswordField</code> (passwordField)</strong><ul>
+                    <li><strong>Data Type:</strong> Secure string (password)</li>
+                    <li><strong>Behavior:</strong> Character masking for security</li>
+                    <li><strong>Placeholder:</strong> "Enter your password"</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (loginButton)</strong><ul>
+                    <li><strong>Text:</strong> "Login"</li>
+                    <li><strong>Function:</strong> Validate credentials and proceed to HomePage</li>
+                    <li><strong>State:</strong> Enabled when both fields have content</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (registerButton)</strong><ul>
+                    <li><strong>Text:</strong> "Register"</li>
+                    <li><strong>Function:</strong> Opens RegistrationDialog for new user creation</li>
+                    <li><strong>Action:</strong> Modal dialog with username, password, email fields</li>
+                </ul></li>
+                <li><strong><code>JLabel</code> (errorLabel)</strong><ul>
+                    <li><strong>Function:</strong> Display authentication error messages</li>
+                    <li><strong>Visibility:</strong> Hidden by default, shown on error</li>
+                    <li><strong>Styling:</strong> Red text for error indication</li>
+                </ul></li>
+                <li><strong><code>JProgressBar</code> (loadingIndicator)</strong><ul>
+                    <li><strong>Function:</strong> Shows loading state during authentication</li>
+                    <li><strong>Behavior:</strong> Indeterminate progress for async operations</li>
+                </ul></li>
+            </ol>
+
+            <p><strong>Action Elements:</strong></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Element</th>
+                        <th>Input Device</th>
+                        <th>Action Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>usernameField</td>
+                        <td>Keyboard</td>
+                        <td>Text input with real-time validation</td>
+                    </tr>
+                    <tr>
+                        <td>passwordField</td>
+                        <td>Keyboard</td>
+                        <td>Secure text input with Enter key support</td>
+                    </tr>
+                    <tr>
+                        <td>loginButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Authenticate user and navigate to main app</td>
+                    </tr>
+                    <tr>
+                        <td>registerButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Open registration dialog for new users</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Home Page (<code>HomePage.java</code>)</h4>
+            <p><strong>Layout Structure:</strong></p>
+            <pre><code>
+┌─────────────────────────────────────────────────┐
+│      Welcome [Username] - Recipe Manager        │
+├─────────────────────────────────────────────────┤
+│ Search: [________________] [Categories...] [All]│
+├─────────────────────────────────────────────────┤
+│ ┌─────────────────────────────────────────────┐ │
+│ │          RECIPES TABLE                      │ │
+│ │ ┌────────┬─────────┬───────┬─────────────┐  │ │
+│ │ │ Name   │Category │ Time  │ Instructions│  │ │
+│ │ ├────────┼─────────┼───────┼─────────────┤  │ │
+│ │ │Pasta   │Italian  │ 30min │ Boil water  │  │ │
+│ │ │Stir Fry│Asian    │ 15min │ Heat oil    │  │ │
+│ │ └────────┴─────────┴───────┴─────────────┘  │ │
+│ └─────────────────────────────────────────────┘ │
+├─────────────────────────────────────────────────┤
+│ [Add Recipe] [Edit Recipe] [Delete Recipe]      │
+│ [Settings] [Logout]                             │
+└─────────────────────────────────────────────────┘
+            </code></pre>
+
+            <p><strong>GUI Components:</strong></p>
+            <ol>
+                <li><strong><code>JPanel</code> (mainPanel)</strong><ul>
+                    <li><strong>Layout:</strong> BorderLayout with header, center, and button panels</li>
+                </ul></li>
+                <li><strong><code>JLabel</code> (welcomeLabel)</strong><ul>
+                    <li><strong>Text:</strong> "Welcome [Username] - Recipe Manager"</li>
+                    <li><strong>Function:</strong> Personalized greeting with logged-in user</li>
+                </ul></li>
+                <li><strong><code>JTextField</code> (searchField)</strong><ul>
+                    <li><strong>Function:</strong> Filter recipes by name in real-time</li>
+                    <li><strong>Features:</strong> Case-insensitive search functionality</li>
+                    <li><strong>Placeholder:</strong> "Search recipes by name..."</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (categoryButtons)</strong><ul>
+                    <li><strong>Categories:</strong> "Breakfast", "Lunch", "Dinner", "Dessert", "All"</li>
+                    <li><strong>Function:</strong> Filter recipe display by category</li>
+                    <li><strong>Styling:</strong> Toggle appearance when selected</li>
+                </ul></li>
+                <li><strong><code>JTable</code> (recipeTable)</strong><ul>
+                    <li><strong>Columns:</strong> Recipe Name, Category, Prep Time, Cook Time, Instructions</li>
+                    <li><strong>Data Source:</strong> Populated from database via RecipeManager</li>
+                    <li><strong>Selection:</strong> Single row selection for edit/delete operations</li>
+                    <li><strong>Sorting:</strong> Clickable column headers for data sorting</li>
+                </ul></li>
+                <li><strong><code>JScrollPane</code> (tableScrollPane)</strong><ul>
+                    <li><strong>Function:</strong> Scrollable container for recipe table</li>
+                    <li><strong>Behavior:</strong> Automatic scrollbars when needed</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (addRecipeButton)</strong><ul>
+                    <li><strong>Text:</strong> "Add Recipe"</li>
+                    <li><strong>Function:</strong> Opens RecipeEditorPage in create mode</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (editRecipeButton)</strong><ul>
+                    <li><strong>Text:</strong> "Edit Recipe"</li>
+                    <li><strong>Function:</strong> Opens RecipeEditorPage with selected recipe data</li>
+                    <li><strong>State:</strong> Enabled only when a recipe is selected</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (deleteRecipeButton)</strong><ul>
+                    <li><strong>Text:</strong> "Delete Recipe"</li>
+                    <li><strong>Function:</strong> Removes selected recipe with confirmation dialog</li>
+                    <li><strong>State:</strong> Enabled only when a recipe is selected</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (settingsButton)</strong><ul>
+                    <li><strong>Text:</strong> "Settings"</li>
+                    <li><strong>Function:</strong> Navigate to SettingsPage</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (logoutButton)</strong><ul>
+                    <li><strong>Text:</strong> "Logout"</li>
+                    <li><strong>Function:</strong> Return to SignInPage and clear session</li>
+                </ul></li>
+            </ol>
+
+            <p><strong>Action Elements:</strong></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Element</th>
+                        <th>Input Device</th>
+                        <th>Action Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>searchField</td>
+                        <td>Keyboard</td>
+                        <td>Real-time recipe filtering by name</td>
+                    </tr>
+                    <tr>
+                        <td>categoryButtons</td>
+                        <td>Mouse</td>
+                        <td>Filter recipes by selected category</td>
+                    </tr>
+                    <tr>
+                        <td>recipeTable</td>
+                        <td>Mouse</td>
+                        <td>Row selection for edit/delete operations</td>
+                    </tr>
+                    <tr>
+                        <td>addRecipeButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Navigate to recipe creation form</td>
+                    </tr>
+                    <tr>
+                        <td>editRecipeButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Open selected recipe in editor</td>
+                    </tr>
+                    <tr>
+                        <td>deleteRecipeButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Delete selected recipe with confirmation</td>
+                    </tr>
+                    <tr>
+                        <td>settingsButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Navigate to settings page</td>
+                    </tr>
+                    <tr>
+                        <td>logoutButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>End session and return to login</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Recipe Editor Page (<code>RecipeEditorPage.java</code>)</h4>
+            <p><strong>Layout Structure:</strong></p>
+            <pre><code>
+┌─────────────────────────────────────────────────┐
+│            CREATE/EDIT RECIPE                   │
+├─────────────────────────────────────────────────┤
+│ Recipe Name: [_________________________]        │
+│ Category: [Dropdown ▼]                          │
+│ Prep Time: [___] mins  Cook Time: [___] mins    │
+│ ┌─────────────────────────────────────────────┐ │
+│ │ Instructions:                               │ │
+│ │ ┌─────────────────────────────────────────┐ │ │
+│ │ │ Enter detailed cooking instructions...  │ │ │
+│ │ │                                         │ │ │
+│ │ └─────────────────────────────────────────┘ │ │
+│ └─────────────────────────────────────────────┘ │
+│ ┌─────────────────────────────────────────────┐ │
+│ │              INGREDIENTS                    │ │
+│ │ ┌────────┬─────────┬───────┬─────────────┐  │ │
+│ │ │ Name   │Quantity │ Unit  │   Actions   │  │ │
+│ │ ├────────┼─────────┼───────┼─────────────┤  │ │
+│ │ │ Flour  │   2     │ cups  │[Edit][Del]  │  │ │
+│ │ │ Sugar  │   1     │ cup   │[Edit][Del]  │  │ │
+│ │ └────────┴─────────┴───────┴─────────────┘  │ │
+│ │ [Add Ingredient]                            │ │
+│ └─────────────────────────────────────────────┘ │
+│ ┌─────────────────────────────────────────────┐ │
+│ │           COOKING TIMER                     │ │
+│ │ Time: [00:00:00]                            │ │
+│ │ [Start Timer] [Stop Timer] [Reset]          │ │
+│ └─────────────────────────────────────────────┘ │
+│ [Save Recipe] [Cancel] [Back to Home]          │
+└─────────────────────────────────────────────────┘
+            </code></pre>
+
+            <p><strong>GUI Components:</strong></p>
+            <ol>
+                <li><strong><code>JTextField</code> (recipeNameField)</strong><ul>
+                    <li><strong>Function:</strong> Recipe name input</li>
+                    <li><strong>Validation:</strong> Non-empty name required</li>
+                    <li><strong>Character limit:</strong> 255 characters</li>
+                </ul></li>
+                <li><strong><code>JComboBox</code> (categoryDropdown)</strong><ul>
+                    <li><strong>Options:</strong> "Breakfast", "Lunch", "Dinner", "Dessert", "Snack"</li>
+                    <li><strong>Default:</strong> Pre-selected category for editing</li>
+                </ul></li>
+                <li><strong><code>JSpinner</code> (prepTimeSpinner)</strong><ul>
+                    <li><strong>Range:</strong> 1-999 minutes</li>
+                    <li><strong>Default:</strong> 15 minutes</li>
+                </ul></li>
+                <li><strong><code>JSpinner</code> (cookTimeSpinner)</strong><ul>
+                    <li><strong>Range:</strong> 1-999 minutes</li>
+                    <li><strong>Default:</strong> 30 minutes</li>
+                </ul></li>
+                <li><strong><code>JTextArea</code> (instructionsArea)</strong><ul>
+                    <li><strong>Function:</strong> Multi-line cooking instructions</li>
+                    <li><strong>Properties:</strong> Word wrap, scrollable</li>
+                    <li><strong>Placeholder:</strong> "Enter detailed cooking instructions..."</li>
+                </ul></li>
+                <li><strong><code>JTable</code> (ingredientsTable)</strong><ul>
+                    <li><strong>Columns:</strong> Name, Quantity, Unit, Actions (Edit/Delete)</li>
+                    <li><strong>Data Source:</strong> Ingredients associated with current recipe</li>
+                    <li><strong>Editing:</strong> Inline editing or dialog-based modification</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (addIngredientButton)</strong><ul>
+                    <li><strong>Text:</strong> "Add Ingredient"</li>
+                    <li><strong>Function:</strong> Opens IngredientDialog for new ingredient</li>
+                </ul></li>
+                <li><strong><code>JLabel</code> (timerDisplay)</strong><ul>
+                    <li><strong>Format:</strong> "HH:MM:SS"</li>
+                    <li><strong>Updates:</strong> Real-time countdown/countup display</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (startTimerButton)</strong><ul>
+                    <li><strong>Text:</strong> "Start Timer"</li>
+                    <li><strong>Function:</strong> Begin cooking timer countdown</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (stopTimerButton)</strong><ul>
+                    <li><strong>Text:</strong> "Stop Timer"</li>
+                    <li><strong>Function:</strong> Pause or stop active timer</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (resetTimerButton)</strong><ul>
+                    <li><strong>Text:</strong> "Reset"</li>
+                    <li><strong>Function:</strong> Reset timer to 00:00:00</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (saveButton)</strong><ul>
+                    <li><strong>Text:</strong> "Save Recipe"</li>
+                    <li><strong>Function:</strong> Save recipe and return to HomePage</li>
+                    <li><strong>Validation:</strong> Ensures all required fields are completed</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (cancelButton)</strong><ul>
+                    <li><strong>Text:</strong> "Cancel"</li>
+                    <li><strong>Function:</strong> Discard changes and return to HomePage</li>
+                </ul></li>
+            </ol>
+
+            <p><strong>Action Elements:</strong></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Element</th>
+                        <th>Input Device</th>
+                        <th>Action Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>recipeNameField</td>
+                        <td>Keyboard</td>
+                        <td>Text input with validation feedback</td>
+                    </tr>
+                    <tr>
+                        <td>categoryDropdown</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Category selection from predefined options</td>
+                    </tr>
+                    <tr>
+                        <td>prepTimeSpinner</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Numeric input with increment/decrement</td>
+                    </tr>
+                    <tr>
+                        <td>cookTimeSpinner</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Numeric input with increment/decrement</td>
+                    </tr>
+                    <tr>
+                        <td>instructionsArea</td>
+                        <td>Keyboard</td>
+                        <td>Multi-line text input with scrolling</td>
+                    </tr>
+                    <tr>
+                        <td>addIngredientButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Open ingredient creation dialog</td>
+                    </tr>
+                    <tr>
+                        <td>ingredientsTable</td>
+                        <td>Mouse</td>
+                        <td>Edit/delete ingredients inline</td>
+                    </tr>
+                    <tr>
+                        <td>timer buttons</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Control cooking timer functionality</td>
+                    </tr>
+                    <tr>
+                        <td>saveButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Validate and save recipe data</td>
+                    </tr>
+                    <tr>
+                        <td>cancelButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Exit without saving changes</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Settings Page (<code>SettingsPage.java</code>)</h4>
+            <p><strong>Layout Structure:</strong></p>
+            <pre><code>
+┌─────────────────────────────────────────────────┐
+│              RECIPE MANAGER SETTINGS            │
+├─────────────────────────────────────────────────┤
+│ ┌─────────────────────────────────────────────┐ │
+│ │              USER PROFILE                   │ │
+│ │ Current Email: [john@example.com]           │ │
+│ │ New Email: [_________________________]      │ │
+│ │ Current Password: [__________________]      │ │
+│ │ New Password: [______________________]      │ │
+│ │ Confirm Password: [__________________]      │ │
+│ │         [Update Profile]                    │ │
+│ └─────────────────────────────────────────────┘ │
+│ ┌─────────────────────────────────────────────┐ │
+│ │            DATA MANAGEMENT                  │ │
+│ │                                             │ │
+│ │         [Export Recipes]                    │ │
+│ │         [Import Recipes]                    │ │
+│ │         [Create Backup]                     │ │
+│ │                                             │ │
+│ └─────────────────────────────────────────────┘ │
+│ ┌─────────────────────────────────────────────┐ │
+│ │          ACCOUNT MANAGEMENT                 │ │
+│ │                                             │ │
+│ │         [Deactivate Account]                │ │
+│ │         [Delete Account]                    │ │
+│ │                                             │ │
+│ └─────────────────────────────────────────────┘ │
+│           [Back to Home] [Logout]               │
+└─────────────────────────────────────────────────┘
+            </code></pre>
+
+            <p><strong>GUI Components:</strong></p>
+            <ol>
+                <li><strong><code>JLabel</code> (currentEmailLabel)</strong><ul>
+                    <li><strong>Function:</strong> Display current user email address</li>
+                    <li><strong>Data Source:</strong> Retrieved from user session</li>
+                </ul></li>
+                <li><strong><code>JTextField</code> (newEmailField)</strong><ul>
+                    <li><strong>Function:</strong> Input field for email address update</li>
+                    <li><strong>Validation:</strong> Email format validation</li>
+                </ul></li>
+                <li><strong><code>JPasswordField</code> (currentPasswordField)</strong><ul>
+                    <li><strong>Function:</strong> Current password for verification</li>
+                    <li><strong>Security:</strong> Required for profile changes</li>
+                </ul></li>
+                <li><strong><code>JPasswordField</code> (newPasswordField)</strong><ul>
+                    <li><strong>Function:</strong> New password input</li>
+                    <li><strong>Validation:</strong> Password strength requirements</li>
+                </ul></li>
+                <li><strong><code>JPasswordField</code> (confirmPasswordField)</strong><ul>
+                    <li><strong>Function:</strong> Password confirmation</li>
+                    <li><strong>Validation:</strong> Must match new password</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (updateProfileButton)</strong><ul>
+                    <li><strong>Text:</strong> "Update Profile"</li>
+                    <li><strong>Function:</strong> Save profile changes to database</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (exportButton)</strong><ul>
+                    <li><strong>Text:</strong> "Export Recipes"</li>
+                    <li><strong>Function:</strong> Export user recipes to JSON file</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (importButton)</strong><ul>
+                    <li><strong>Text:</strong> "Import Recipes"</li>
+                    <li><strong>Function:</strong> Import recipes from JSON file</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (backupButton)</strong><ul>
+                    <li><strong>Text:</strong> "Create Backup"</li>
+                    <li><strong>Function:</strong> Create complete data backup</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (deactivateButton)</strong><ul>
+                    <li><strong>Text:</strong> "Deactivate Account"</li>
+                    <li><strong>Function:</strong> Temporary account deactivation</li>
+                </ul></li>
+                <li><strong><code>JButton</code> (deleteAccountButton)</strong><ul>
+                    <li><strong>Text:</strong> "Delete Account"</li>
+                    <li><strong>Function:</strong> Permanent account and data deletion</li>
+                    <li><strong>Safety:</strong> Multiple confirmation dialogs</li>
+                </ul></li>
+            </ol>
+
+            <p><strong>Action Elements:</strong></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Element</th>
+                        <th>Input Device</th>
+                        <th>Action Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>profile fields</td>
+                        <td>Keyboard</td>
+                        <td>Text input with real-time validation</td>
+                    </tr>
+                    <tr>
+                        <td>updateProfileButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Save profile changes with verification</td>
+                    </tr>
+                    <tr>
+                        <td>exportButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Create JSON export of user recipes</td>
+                    </tr>
+                    <tr>
+                        <td>importButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Load recipes from JSON file</td>
+                    </tr>
+                    <tr>
+                        <td>backupButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Create comprehensive data backup</td>
+                    </tr>
+                    <tr>
+                        <td>deactivateButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Temporarily disable user account</td>
+                    </tr>
+                    <tr>
+                        <td>deleteAccountButton</td>
+                        <td>Mouse/Keyboard</td>
+                        <td>Permanently delete account and data</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Common UI Components</h3>
+            <h4>Dialog Components</h4>
+            <p><strong><code>RegistrationDialog</code>:</strong> Modal dialog for new user registration with username, password, and email fields</p>
+            <p><strong><code>IngredientDialog</code>:</strong> Dialog for adding/editing ingredients with name, quantity, and unit fields</p>
+            <p><strong><code>JFileChooser</code>:</strong> Standard file selection dialogs for import/export operations</p>
+            <p><strong><code>JOptionPane</code>:</strong> Standard confirmation dialogs for delete operations and error messages</p>
+
+            <h4>Design Principles Applied</h4>
+            <p><strong>Consistency:</strong> Uniform button styling, consistent layout patterns, standardized spacing and typography</p>
+            <p><strong>Usability:</strong> Clear navigation flow, immediate feedback for user actions, keyboard shortcuts support</p>
+            <p><strong>Functionality:</strong> Real-time validation, context-sensitive button states, organized information hierarchy</p>
+            <p><strong>Accessibility:</strong> Keyboard navigation support, clear focus indicators, readable fonts and colors</p>
+            <h2 id="program-flow-diagram">2.2 Program Flow Diagram</h2>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+                       flowchart TD
+    %% Application Initialization
+    A([Start Application]) --> B[Main.java - Setup JFrame]
+    B --> C[(DatabaseConnector - Initialize MySQL)]
+    C --> D[(Auto-create Tables if Missing)]
+    D --> E{{Database Connected?}}
+    E -->|No| F[/Display Error Message/]
+    F --> G[End Application]
+    E -->|Yes| H[Launch SignInPage]
+
+    %% Login Process
+    H --> I[SignInPage - Display Login Form]
+    I --> J{{User Action}}
+    J -->|Click Login| K[Get Username/Password]
+    J -->|Click Register| L[Open RegistrationDialog Modal]
+
+    K --> M[(UserManager.validateLogin)]
+    M --> N{{User Exists?}}
+    N -->|No| O[/Display Invalid Credentials/]
+    O --> I
+    N -->|Yes| P[Compare PBKDF2 Hashed Passwords]
+    P --> Q{{Password Match?}}
+    Q -->|No| O
+    Q -->|Yes| R[Set Current User Session]
+
+    %% Registration Process
+    L --> S[RegistrationDialog - Get Details]
+    S --> T[Validate Input Data]
+    T --> U{{Valid Data?}}
+    U -->|No| V[/Display Validation Errors/]
+    V --> L
+    U -->|Yes| W[(UserManager - PBKDF2 Hash Password)]
+    W --> X[(UserManager.addUser)]
+    X --> Y{{User Created?}}
+    Y -->|No| Z[/Display Registration Failed/]
+    Z --> L
+    Y -->|Yes| AA[/Display Registration Successful/]
+    AA --> I
+
+    %% Main Interface
+    R --> BB[Launch HomePage Dashboard]
+    BB --> CC[(RecipeManager.getRecipesByUserId)]
+    CC --> DD[Display Recipe JTable]
+    DD --> EE[Generate Category Filter Buttons]
+    EE --> FF[Display Search Bar & Welcome]
+    FF --> GG[Show Action Buttons Row]
+    GG --> HH[Complete HomePage Layout]
+
+    %% User Actions in Main Interface
+    HH --> II{{User Action}}
+    II -->|Search/Filter| JJ[Filter Recipes by Name/Category]
+    JJ --> KK[Update Recipe JTable Display]
+    KK --> HH
+
+    II -->|Click Settings| LL[Launch SettingsPage]
+    LL --> MM[Display Settings Sections]
+    MM --> NN{{Settings Action}}
+    NN -->|Update Profile| OO[Change Email/Password Form]
+    OO --> PP[(UserManager.updateUser)]
+    PP --> QQ{{Update Successful?}}
+    QQ -->|Yes| RR[/Display Profile Updated/]
+    QQ -->|No| SS[/Display Update Failed/]
+    RR --> MM
+    SS --> MM
+
+    NN -->|Export Data| TT[(FileManager.exportRecipesToJSON)]
+    TT --> UU{{Export Successful?}}
+    UU -->|Yes| VV[/Display Export Complete/]
+    UU -->|No| WW[/Display Export Failed/]
+    VV --> MM
+    WW --> MM
+
+    NN -->|Import Data| XX[Select JSON Import File]
+    XX --> YY[(FileManager.importRecipesFromJSON)]
+    YY --> ZZ{{Import Successful?}}
+    ZZ -->|Yes| AAA[Refresh Recipe List]
+    ZZ -->|No| BBB[/Display Import Failed/]
+    AAA --> HH
+    BBB --> MM
+
+    NN -->|Create Backup| CCC[(FileManager.createBackup)]
+    CCC --> DDD{{Backup Successful?}}
+    DDD -->|Yes| EEE[/Display Backup Complete/]
+    DDD -->|No| FFF[/Display Backup Failed/]
+    EEE --> MM
+    FFF --> MM
+
+    NN -->|Delete Account| GGG[Confirm Account Deletion]
+    GGG --> HHH{{Confirm Delete?}}
+    HHH -->|No| MM
+    HHH -->|Yes| III[(UserManager.deleteUser - Cascade)]
+    III --> JJJ{{Delete Successful?}}
+    JJJ -->|Yes| KKK[/Account Deleted - Return to Login/]
+    JJJ -->|No| LLL[/Display Delete Failed/]
+    KKK --> I
+    LLL --> MM
+
+    NN -->|Back to Home| HH
+
+    %% Recipe Editor
+    FF -->|Add New Recipe| TT[Launch RecipeEditorPage]
+    FF -->|Edit Recipe| UU[Get Selected Recipe]
+    UU --> VV[(RecipeManager.getRecipeById)]
+    VV --> WW[Populate Editor Fields]
+    WW --> TT
+
+    TT --> XX[Display Recipe Editor]
+    XX --> YY{{Editor Action}}
+    YY -->|Add Ingredient| ZZ[Display Ingredient Form]
+    ZZ --> AAA[Get Ingredient Details]
+    AAA --> BBB[Add to Ingredient List]
+    BBB --> XX
+
+    YY -->|Remove Ingredient| CCC[Remove from Ingredient List]
+    CCC --> XX
+
+    YY -->|Start Timer| DDD[Get Timer Duration]
+    DDD --> EEE[(TimerManager.startTimer)]
+    EEE --> FFF[Display Timer Countdown]
+    FFF --> GGG{{Timer Action}}
+    GGG -->|Timer Complete| HHH[/Display Timer Alert/]
+    GGG -->|Stop Timer| III[(TimerManager.stopTimer)]
+    HHH --> XX
+    III --> XX
+
+    YY -->|Save Recipe| JJJ[Validate Recipe Data]
+    JJJ --> KKK{{Valid Recipe?}}
+    KKK -->|No| LLL[/Display Validation Errors/]
+    LLL --> XX
+    KKK -->|Yes| MMM[(RecipeManager.addRecipe)]
+    MMM --> NNN[Get New Recipe ID]
+    NNN --> OOO[Save Each Ingredient]
+    OOO --> PPP[(IngredientManager.addIngredient)]
+    PPP --> QQQ{{More Ingredients?}}
+    QQQ -->|Yes| OOO
+    QQQ -->|No| RRR{{Save Successful?}}
+    RRR -->|Yes| SSS[/Display Recipe Saved/]
+    RRR -->|No| TTT[/Display Save Failed/]
+    SSS --> EE
+    TTT --> XX
+
+    YY -->|Update Recipe| UUU[(RecipeManager.updateRecipe)]
+    UUU --> VVV[Update Ingredients]
+    VVV --> WWW[(IngredientManager.updateIngredient)]
+    WWW --> XXX{{Update Successful?}}
+    XXX -->|Yes| YYY[/Display Recipe Updated/]
+    XXX -->|No| ZZZ[/Display Update Failed/]
+    YYY --> EE
+    ZZZ --> XX
+
+    YY -->|Cancel/Back| EE
+
+    %% Delete Recipe
+    FF -->|Delete Recipe| AAAA[Confirm Delete Action]
+    AAAA --> BBBB{{Confirm Delete?}}
+    BBBB -->|No| EE
+    BBBB -->|Yes| CCCC[(RecipeManager.deleteRecipe)]
+    CCCC --> DDDD{{Delete Successful?}}
+    DDDD -->|Yes| EEEE[Refresh Recipe List]
+    DDDD -->|No| FFFF[/Display Delete Failed/]
+    EEEE --> EE
+    FFFF --> EE
+
+    %% Export/Import Recipes
+    FF -->|Export Recipes| GGGG[(FileManager.exportRecipesToJSON)]
+    GGGG --> HHHH{{Export Successful?}}
+    HHHH -->|Yes| IIII[/Display Export Complete/]
+    HHHH -->|No| JJJJ[/Display Export Failed/]
+    IIII --> EE
+    JJJJ --> EE
+
+    FF -->|Import Recipes| KKKK[Select Import File]
+    KKKK --> LLLL[(FileManager.importRecipesFromJSON)]
+    LLLL --> MMMM{{Import Successful?}}
+    MMMM -->|Yes| NNNN[Refresh Recipe List]
+    MMMM -->|No| OOOO[/Display Import Failed/]
+    NNNN --> EE
+    OOOO --> EE
+
+    %% Logout and Exit
+    FF -->|Logout| PPPP[Clear User Session]
+    PPPP --> H
+
+    FF -->|Exit Application| QQQQ[Save Any Pending Data]
+    QQQQ --> RRRR[(Close Database Connection)]
+    RRRR --> SSSS([End Application])
+
+    %% Styling
+    classDef startEnd fill:#e1f5fe,stroke:#0277bd,stroke-width:3px,color:#000
+    classDef process fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000
+    classDef decision fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000
+    classDef database fill:#e8f5e8,stroke:#388e3c,stroke-width:2px,color:#000
+    classDef display fill:#ffebee,stroke:#d32f2f,stroke-width:2px,color:#000
+    classDef manager fill:#e3f2fd,stroke:#1976d2,stroke-width:2px,color:#000
+    classDef ui fill:#fce4ec,stroke:#c2185b,stroke-width:2px,color:#000
+
+    class A,G,IIIII startEnd
+    class B,T,KK,DD,EE,FF,GG,JJ,AAAA,BBBB,XXX,YYY,ZZZ,MMMM,NNNN,DDDDD,GGGGG process
+    class E,J,N,Q,U,Y,II,NN,QQ,UU,ZZ,DDD,HHH,VVV,JJJJ,PPPP,QQQQ,WWWW,AAAAA,CCCCC decision
+    class C,D,M,W,X,CC,PP,TT,YY,CCC,OOO,YYY,DDDD,EEEE,LLLL,TTTT,VVVV,BBBBB,HHHHH database
+    class I,MM,QQQ,RRR,SSS,UUU,WWW,CCCC,EEEE,IIII,ZZZZ display
+    class F,O,V,Z,RR,SS,VV,WW,BBB,EEE,FFF,KKKK,RRRR,SSSS,XXXX,YYYY,EEEEE ui
+    class L,S,K,OO,XXX,FFFF,GGGG,HHHH,AAA,III manager
+
+    class AA,RR,SS,VV,WW,BBB,EEE,FFF,KKKK,RRRR,SSSS,XXXX,YYYY,EEEEE ui
+                </pre>
+            </div>
+            <h2 id="class-design-and-oop-principles">2.3 Class Design and OOP Principles</h2>
+            <h3>Class Design</h3>
+            <div class="mermaid-container">
+                <pre class="mermaid">
+classDiagram
+    %% ===================
+    %% CORE MODEL CLASSES
+    %% ===================
+    class User {
+        -int userId
+        -String username
+        #String password
+        -String email
+        -LocalDateTime createdAt
+        +User()
+        +User(username, password, email)
+        +User(userId, username, password, email, createdAt)
+        +getUserId()
+        +getUsername()
+        +getPassword()
+        +getEmail()
+        +getCreatedAt()
+        +setUserId(userId)
+        +setUsername(username)
+        +setPassword(password)
+        +setEmail(email)
+        +setCreatedAt(createdAt)
+        +isPersisted()
+        +isValid()
+        +toSafeString()
+        +createSafeCopy()
+        +prepareForPersistence()
+        +toString()
+        +equals(obj)
+        +hashCode()
+    }
+
+    class Recipe {
+        -int recipeId
+        -int userId
+        -String name
+        -String category
+        -int prepTime
+        -int cookTime
+        -String instructions
+        +Recipe()
+        +Recipe(recipeId, userId, name, category, prepTime, cookTime, instructions)
+        +Recipe(userId, name, category, prepTime, cookTime, instructions)
+        +getRecipeId()
+        +setRecipeId(recipeId)
+        +getUserId()
+        +setUserId(userId)
+        +getName()
+        +setName(name)
+        +getCategory()
+        +setCategory(category)
+        +getPrepTime()
+        +setPrepTime(prepTime)
+        +getCookTime()
+        +setCookTime(cookTime)
+        +getTotalTime()
+        +getInstructions()
+        +setInstructions(instructions)
+        +toString()
+        +equals(obj)
+        +hashCode()
+    }
+
+    class Ingredient {
+        -int ingredientId
+        -int recipeId
+        -String name
+        -double quantity
+        -String unit
+        +Ingredient()
+        +Ingredient(ingredientId, recipeId, name, quantity, unit)
+        +Ingredient(recipeId, name, quantity, unit)
+        +getIngredientId()
+        +setIngredientId(ingredientId)
+        +getRecipeId()
+        +setRecipeId(recipeId)
+        +getName()
+        +setName(name)
+        +getQuantity()
+        +setQuantity(quantity)
+        +getUnit()
+        +setUnit(unit)
+        +getFormattedQuantity()
+        +toString()
+        +equals(obj)
+        +hashCode()
+    }
+
+    %% ===================
+    %% DATABASE LAYER
+    %% ===================
+    class DatabaseConnector {
+        -DatabaseConnector instance$
+        -Object lock$
+        -String DB_HOST$
+        -String DB_PORT$
+        -String DB_DATABASE_NAME$
+        -String DB_USER$
+        -String DB_PASSWORD$
+        -String DB_URL$
+        -Connection connection
+        -AtomicBoolean isInitialized
+        -Logger logger$
+        -String CREATE_USERS_TABLE$
+        -String CREATE_RECIPES_TABLE$
+        -String CREATE_INGREDIENTS_TABLE$
+        -DatabaseConnector()
+        +getInstance()$
+        -initializeLogger()
+        +connect()
+        +executeUpdate(sql)
+        +executeUpdate(sql, parameters)
+        +executeQuery(sql)
+        +executeQuery(sql, parameters)
+        +indexExists(tableName, indexName)
+        +createIndexIfNotExists(sql, tableName, indexName)
+        +initializeTables()
+        +getConnection()
+        -setParameters(pstmt, parameters)
+        -validateSqlStatement(sql)
+        +testConnection()
+        +getDatabaseMetadata()
+        +getServerInfo()
+        +closeConnection()
+        +executeTransaction(operations)
+    }
+
+    %% ===================
+    %% MANAGER CLASSES
+    %% ===================
+    class UserManager {
+        -DatabaseConnector dbConnector
+        -Logger logger$
+        -int SALT_LENGTH$
+        -int HASH_LENGTH$
+        -int ITERATIONS$
+        -String ALGORITHM$
+        -Pattern EMAIL_PATTERN$
+        -Pattern USERNAME_PATTERN$
+        -int MIN_PASSWORD_LENGTH$
+        -int MAX_PASSWORD_LENGTH$
+        -String INSERT_USER$
+        -String SELECT_USER_BY_ID$
+        -String SELECT_USER_BY_USERNAME$
+        -String UPDATE_USER$
+        -String DELETE_USER$
+        -String CHECK_USERNAME_EXISTS$
+        -String CHECK_EMAIL_EXISTS$
+        +UserManager()
+        +addUser(user)
+        +getUserById(id)
+        +getUserByUsername(username)
+        +updateUser(user)
+        +deleteUser(id)
+        -encryptPassword(password)
+        +validateLogin(username, password)
+        -verifyPassword(password, storedPassword)
+        -createUserFromResultSet(rs)
+        -validateUserInput(user, isNewUser)
+        -isValidUsername(username)
+        -isValidEmail(email)
+        -isValidPassword(password)
+        -usernameExists(username, excludeUserId)
+        -emailExists(email, excludeUserId)
+    }
+
+    class UserOperationResult {
+        -boolean success
+        -String message
+        -User user
+        +UserOperationResult(success, message)
+        +UserOperationResult(success, message, user)
+        +isSuccess()
+        +getMessage()
+        +getUser()
+        +toString()
+    }
+
+    class RecipeManager {
+        -Logger logger$
+        -DatabaseConnector dbConnector
+        -String INSERT_RECIPE$
+        -String SELECT_RECIPE_BY_ID$
+        -String SELECT_ALL_RECIPES$
+        -String SELECT_RECIPES_BY_USER$
+        -String SELECT_RECIPES_BY_CATEGORY$
+        -String UPDATE_RECIPE$
+        -String DELETE_RECIPE$
+        -String DELETE_INGREDIENTS_BY_RECIPE$
+        -String SEARCH_RECIPES$
+        -String CHECK_RECIPE_EXISTS$
+        +RecipeManager()
+        +RecipeManager(dbConnector)
+        +addRecipe(recipe)
+        +getRecipeById(id)
+        +getAllRecipes()
+        +getRecipesByUserId(userId)
+        +getRecipesByCategory(category)
+        +updateRecipe(recipe)
+        +deleteRecipe(id)
+        +searchRecipes(searchTerm)
+        +recipeExists(recipeId)
+        -mapResultSetToRecipe(rs)
+        -validateRecipe(recipe)
+        -validateId(id, fieldName)
+        -validateString(value, fieldName)
+    }
+
+    class IngredientManager {
+        -Logger logger$
+        -DatabaseConnector dbConnector
+        -String INSERT_INGREDIENT$
+        -String SELECT_INGREDIENTS_BY_RECIPE$
+        -String SELECT_INGREDIENT_BY_ID$
+        -String UPDATE_INGREDIENT$
+        -String DELETE_INGREDIENT$
+        -String DELETE_INGREDIENTS_BY_RECIPE$
+        -String CHECK_RECIPE_EXISTS$
+        -String CHECK_INGREDIENT_EXISTS$
+        -String COUNT_INGREDIENTS_BY_RECIPE$
+        +IngredientManager()
+        +IngredientManager(dbConnector)
+        +addIngredient(ingredient)
+        +getIngredientsByRecipe(recipeId)
+        +getIngredientById(ingredientId)
+        +updateIngredient(ingredient)
+        +deleteIngredient(id)
+        +deleteIngredientsByRecipe(recipeId)
+        +addIngredientsToRecipe(ingredients)
+        +getIngredientCountByRecipe(recipeId)
+        -recipeExists(recipeId)
+        -ingredientExists(ingredientId)
+        -mapResultSetToIngredient(rs)
+        -validateIngredient(ingredient)
+        -validateId(id, fieldName)
+    }
+
+    %% ===================
+    %% FILE MANAGEMENT
+    %% ===================
+    class FileManager {
+        -Logger logger$
+        -Gson gson
+        -RecipeManager recipeManager
+        -IngredientManager ingredientManager
+        -String[] EXPECTED_RECIPE_FIELDS$
+        -String[] EXPECTED_INGREDIENT_FIELDS$
+        +FileManager(recipeManager, ingredientManager)
+        +FileManager()
+        +exportRecipesToJSON(recipes, filePath)
+        +exportRecipesToJSON(recipes, filePath, progressCallback)
+        +importRecipesFromJSON(filePath)
+        +importRecipesFromJSON(filePath, progressCallback)
+        +exportUserRecipesToJSON(userId, filePath)
+        +exportUserRecipesToJSON(userId, filePath, progressCallback)
+        +validateJSONFile(filePath)
+        +getExportStatistics(filePath)
+        -importSingleRecipe(recipeData)
+        -parseAndValidateJSON(jsonContent)
+        -validateRecipeStructure(recipeData)
+        -readFileContent(reader)
+        -validateRecipeList(recipes, paramName)
+        -validateFilePath(filePath, paramName)
+    }
+
+    %% ===================
+    %% TIMER SYSTEM
+    %% ===================
+    class TimerManager {
+        -Logger logger$
+        -AtomicInteger timerIdGenerator$
+        -Map activeTimers
+        -Integer defaultTimerId
+        +TimerManager()
+        +startTimer(seconds)
+        +startTimer(seconds, name, callback)
+        +stopTimer()
+        +stopTimer(timerId)
+        +pauseTimer()
+        +pauseTimer(timerId)
+        +resumeTimer()
+        +resumeTimer(timerId)
+        +getRemainingTime()
+        +getRemainingTime(timerId)
+        +isRunning()
+        +isRunning(timerId)
+        +getTimerState(timerId)
+        +getAllTimers()
+        +getActiveTimerCount()
+        +stopAllTimers()
+        +formatTime(seconds)
+        -findNextDefaultTimer()
+        -validateSeconds(seconds)
+    }
+
+    class CookingTimer {
+        -int timerId
+        -String name
+        -int totalSeconds
+        -int remainingSeconds
+        -TimerState state
+        -Timer javaTimer
+        -TimerTask currentTask
+        -TimerCallback callback
+        -Object stateLock
+        +CookingTimer(timerId, name, totalSeconds, callback)
+        +start()
+        +pause()
+        +stop()
+        -tick()
+        -completeTimer()
+        -handleError(errorMessage)
+        +getTimerId()
+        +getName()
+        +getTotalSeconds()
+        +getRemainingSeconds()
+        +getState()
+        +isRunning()
+        +isPaused()
+        +isCompleted()
+        +isStopped()
+    }
+
+    %% ===================
+    %% UI LAYER
+    %% ===================
+    class Main {
+        -String APP_TITLE$
+        -String APP_VERSION$
+        -int DEFAULT_WIDTH$
+        -int DEFAULT_HEIGHT$
+        -int MIN_WIDTH$
+        -int MIN_HEIGHT$
+        -Logger logger$
+        -JFrame mainFrame
+        -DatabaseConnector databaseConnector
+        -boolean isShuttingDown
+        +main(args)$
+        -initializeApplication()
+        -setupLogging()
+        -setupSystemProperties()
+        -setLookAndFeel()
+        -setupUIDefaults()
+        -initializeDatabase()
+        -setupGlobalExceptionHandling()
+        -createAndShowMainWindow()
+        -setupMainFrameProperties()
+        -setupWindowListeners()
+        -loadSignInPage()
+        -centerWindow()
+        -handleApplicationShutdown()
+        -performCleanup()
+        +showErrorDialog(title, message)
+        +getMainFrame()
+        +getDatabaseConnector()
+        +isShuttingDown()
+    }
+
+    class SignInPage {
+        -JTextField txtUsername
+        -JPasswordField txtPassword
+        -JButton btnLogin
+        -JButton btnRegister
+        -JButton btnTogglePassword
+        -JLabel lblError
+        -JProgressBar loadingBar
+        -UserManager userManager
+        -boolean passwordVisible
+        -SignInPageListener listener
+        +SignInPage()
+        +SignInPage(userManager)
+        +setSignInPageListener(listener)
+        -initializeComponents()
+        -setupLayout()
+        -setupEventListeners()
+        -handleLogin()
+        -handleRegister()
+        -validateInput(username, password)
+        -togglePasswordVisibility()
+        -setLoading(loading)
+        -showError(message)
+        -showSuccess(message)
+        -clearErrorMessage()
+        -openHomePage(userId)
+        -clearFields()
+        +focusUsernameField()
+        +setEnabled(enabled)
+    }
+
+    class HomePage {
+        -JTable recipeTable
+        -DefaultTableModel tableModel
+        -TableRowSorter tableSorter
+        -JPanel categoryPanel
+        -JTextField searchField
+        -JButton btnAddRecipe
+        -JButton btnEditRecipe
+        -JButton btnDeleteRecipe
+        -JButton btnSettings
+        -JButton btnLogout
+        -JLabel lblWelcome
+        -JLabel lblRecipeCount
+        -RecipeManager recipeManager
+        -int currentUserId
+        -List allRecipes
+        -List allCategories
+        -String selectedCategory
+        +HomePage(userId)
+        -initializeComponents()
+        -createStyledButton(text, backgroundColor)
+        -setupLayout()
+        -setupEventListeners()
+        -loadData()
+        -loadRecipes()
+        -loadCategories()
+        -updateRecipeTable()
+        -updateCategoryButtons()
+        -createCategoryButton(category)
+        -filterRecipesByCategory(category)
+        -getFilteredRecipes()
+        -filterTable()
+        -updateRecipeCount()
+        -openRecipeEditor()
+        -openRecipeEditor(recipe)
+        -editSelectedRecipe()
+        -deleteSelectedRecipe()
+        -openSettings()
+        -handleLogout()
+        +refreshData()
+        -showError(message)
+        -showSuccess(message)
+    }
+
+    %% ===================
+    %% ENUMS & INTERFACES
+    %% ===================
+    class TimerState {
+        <<enumeration>>
+        RUNNING
+        PAUSED
+        STOPPED
+        COMPLETED
+        ERROR
+    }
+
+    class TimerCallback {
+        <<interface>>
+        +onTick(timerId, remainingSeconds, totalSeconds)
+        +onTimerCompleted(timerId, name)
+        +onStateChanged(timerId, oldState, newState)
+        +onTimerError(timerId, error)
+    }
+
+    class ProgressCallback {
+        <<interface>>
+        +onProgress(current, total, message)
+    }
+
+    class SignInPageListener {
+        <<interface>>
+        +onLoginSuccess(userId)
+        +onRegistrationRequested()
+    }
+
+    %% ===================
+    %% RELATIONSHIPS
+    %% ===================
+    UserManager --> DatabaseConnector : uses
+    RecipeManager --> DatabaseConnector : uses
+    IngredientManager --> DatabaseConnector : uses
+    UserManager --> User : manages
+    RecipeManager --> Recipe : manages
+    IngredientManager --> Ingredient : manages
+    FileManager --> RecipeManager : uses
+    FileManager --> IngredientManager : uses
+    TimerManager --> CookingTimer : manages
+    CookingTimer --> TimerState : has
+    CookingTimer --> TimerCallback : uses
+    Main --> DatabaseConnector : initializes
+    Main --> SignInPage : displays
+    SignInPage --> UserManager : uses
+    SignInPage --> SignInPageListener : notifies
+    SignInPage --> HomePage : opens
+    HomePage --> RecipeManager : uses
+    UserManager --> UserOperationResult : returns
+    FileManager --> ProgressCallback : uses
+    TimerManager --> TimerCallback : uses
+    SignInPage --> SignInPageListener : uses
+                </pre>
+            </div>
+            <h3>OOP Principles</h3>
+        <h4>1. Encapsulation</h4>
+        <ul>
+            <li><strong>Field Protection</strong>: All data fields are marked as <code>private</code> (indicated by - in UML), ensuring data integrity and controlled access</li>
+            <li><strong>Getter/Setter Methods</strong>: Public accessor methods provide controlled access to private fields</li>
+            <li><strong>Information Hiding</strong>: Internal implementation details are hidden from external classes</li>
+        </ul>
+        <h4>2. Abstraction</h4>
+        <ul>
+            <li><strong>DatabaseManager</strong>: Provides a high-level API that abstracts complex SQL operations from the UI layer</li>
+            <li><strong>ChatManager</strong>: Abstracts chat-related database operations into simple method calls</li>
+            <li><strong>Data Model Classes</strong>: Abstract database entities into Java objects with clear interfaces</li>
+        </ul>
+        <h4>3. Inheritance</h4>
+        <ul>
+            <li><strong>ResultSetTableModel</strong>: Extends <code>AbstractTableModel</code> to provide specialized table functionality for database results</li>
+            <li><strong>Enum Classes</strong>: All enumerations inherit from Java's <code>Enum</code> class providing type safety</li>
+        </ul>
+        <h4>4. Polymorphism</h4>
+        <ul>
+            <li><strong>Interface Implementation</strong>: <code>ResultSetTableModel</code> implements <code>TableModel</code> interface methods that can be called polymorphically</li>
+            <li><strong>Method Overriding</strong>: The <code>ResultSetTableModel</code> overrides abstract methods from <code>AbstractTableModel</code></li>
+        </ul>
+        <h4>5. Singleton Pattern</h4>
+        <ul>
+            <li><strong>DatabaseConnection</strong>: Ensures only one database connection exists throughout the application</li>
+            <li><strong>UserSession</strong>: Maintains a single session instance for the current user</li>
+        </ul>
+        <h4>6. Composition and Aggregation</h4>
+        <ul>
+            <li><strong>Strong Composition</strong>: <code>ChatMessage</code> cannot exist without <code>ChatSession</code></li>
+            <li><strong>Aggregation</strong>: <code>HelpRequest</code> and <code>User</code> have a "created by" relationship where both can exist independently</li>
+        </ul>
+            <h4>Class Design Analysis</h4>
+            <p><strong>Logical Separation</strong></p>
+            <ul>
+            <li><strong>Data Access Layer</strong>: <code>DatabaseConnection</code>, <code>DatabaseManager</code>, <code>ChatManager</code></li>
+            <li><strong>Business Logic Layer</strong>: <code>UserSession</code>, data model classes</li>
+            <li><strong>Data Model Layer</strong>: POJOs representing database entities</li>
+            <li><strong>Utility Layer</strong>: <code>ResultSetTableModel</code> for specialized table operations</li>
+            </ul>
+            <p><strong>Access Control</strong></p>
+            <ul>
+            <li><strong>Private Fields</strong>: All data members are private to enforce encapsulation</li>
+            <li><strong>Public Methods</strong>: Interface methods are public for external access</li>
+            <li><strong>Protected Methods</strong>: Constructor methods in singleton classes are private to prevent external instantiation</li>
+            </ul>
+            <p><strong>Cohesion and Coupling</strong></p>
+            <ul>
+            <li><strong>High Cohesion</strong>: Each class has a single, well-defined responsibility</li>
+            <li><strong>Loose Coupling</strong>: Classes interact through well-defined interfaces rather than direct field access</li>
+            <li><strong>Dependency Management</strong>: Database-dependent classes use <code>DatabaseConnection</code> singleton to manage connections</li>
+            </ul>
+            <h2 id="secondary-storage-design">2.4 Secondary Storage Design</h2>
+
+            <h3>Storage Type: MySQL Database</h3>
+            <ul>
+                <li><strong>Location</strong>: Local MySQL server (localhost:3306)</li>
+                <li><strong>Database Name</strong>: recipe_manager_db</li>
+                <li><strong>Connection</strong>: JDBC connection via DatabaseConnector class</li>
+                <li><strong>Security</strong>: Prepared statements prevent SQL injection</li>
+                <li><strong>Auto-creation</strong>: Database and tables created automatically on first run</li>
+            </ul>
+
+            <h3>Database Schema Design</h3>
+
+            <h4>Users Table</h4>
+            <p><strong>Purpose</strong>: Store user account information and authentication data for the Recipe Manager application.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field Name</th>
+                        <th>Data Type</th>
+                        <th>Constraints</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>userId</td>
+                        <td>INT</td>
+                        <td>PRIMARY KEY, AUTO_INCREMENT</td>
+                        <td>Unique identifier for each user</td>
+                    </tr>
+                    <tr>
+                        <td>username</td>
+                        <td>VARCHAR(50)</td>
+                        <td>NOT NULL, UNIQUE</td>
+                        <td>Login credential and user identification</td>
+                    </tr>
+                    <tr>
+                        <td>password</td>
+                        <td>VARCHAR(255)</td>
+                        <td>NOT NULL</td>
+                        <td>Hashed password using PBKDF2 algorithm</td>
+                    </tr>
+                    <tr>
+                        <td>email</td>
+                        <td>VARCHAR(100)</td>
+                        <td>NOT NULL, UNIQUE</td>
+                        <td>Email address for account recovery</td>
+                    </tr>
+                    <tr>
+                        <td>createdAt</td>
+                        <td>TIMESTAMP</td>
+                        <td>DEFAULT CURRENT_TIMESTAMP</td>
+                        <td>Account creation date and time</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p><strong>Sample Data</strong>:</p>
+            <pre><code>userId: 1
+username: "john_chef"
+password: "pbkdf2_sha256$260000$randomsalt$hashedpasswordstring"
+email: "john@example.com"
+createdAt: "2024-01-15 10:30:45"
+
+userId: 2
+username: "mary_baker"
+password: "pbkdf2_sha256$260000$anothersalt$differenthashedstring"
+email: "mary@bakingworld.com"
+createdAt: "2024-01-20 14:22:10"</code></pre>
+
+            <h4>Recipes Table</h4>
+            <p><strong>Purpose</strong>: Store recipe information including cooking details and instructions.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field Name</th>
+                        <th>Data Type</th>
+                        <th>Constraints</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>recipeId</td>
+                        <td>INT</td>
+                        <td>PRIMARY KEY, AUTO_INCREMENT</td>
+                        <td>Unique identifier for each recipe</td>
+                    </tr>
+                    <tr>
+                        <td>userId</td>
+                        <td>INT</td>
+                        <td>FOREIGN KEY → users(userId), NOT NULL</td>
+                        <td>Links recipe to its creator</td>
+                    </tr>
+                    <tr>
+                        <td>name</td>
+                        <td>VARCHAR(255)</td>
+                        <td>NOT NULL</td>
+                        <td>Recipe title for display and search</td>
+                    </tr>
+                    <tr>
+                        <td>category</td>
+                        <td>VARCHAR(50)</td>
+                        <td>NOT NULL</td>
+                        <td>Recipe category for filtering</td>
+                    </tr>
+                    <tr>
+                        <td>prepTime</td>
+                        <td>INT</td>
+                        <td>NOT NULL</td>
+                        <td>Preparation time in minutes</td>
+                    </tr>
+                    <tr>
+                        <td>cookTime</td>
+                        <td>INT</td>
+                        <td>NOT NULL</td>
+                        <td>Cooking time in minutes</td>
+                    </tr>
+                    <tr>
+                        <td>instructions</td>
+                        <td>TEXT</td>
+                        <td>NOT NULL</td>
+                        <td>Detailed cooking instructions</td>
+                    </tr>
+                    <tr>
+                        <td>createdAt</td>
+                        <td>TIMESTAMP</td>
+                        <td>DEFAULT CURRENT_TIMESTAMP</td>
+                        <td>Recipe creation date</td>
+                    </tr>
+                    <tr>
+                        <td>updatedAt</td>
+                        <td>TIMESTAMP</td>
+                        <td>DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</td>
+                        <td>Last modification date</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p><strong>Sample Data</strong>:</p>
+            <pre><code>recipeId: 1
+userId: 1
+name: "Classic Spaghetti Carbonara"
+category: "Dinner"
+prepTime: 15
+cookTime: 20
+instructions: "1. Boil water and cook spaghetti until al dente. 2. In a bowl, whisk eggs with parmesan cheese. 3. Cook pancetta until crispy. 4. Mix hot pasta with egg mixture and pancetta. 5. Season with black pepper and serve immediately."
+createdAt: "2024-01-16 09:15:30"
+updatedAt: "2024-01-16 09:15:30"
+
+recipeId: 2
+userId: 2
+name: "Chocolate Chip Cookies"
+category: "Dessert"
+prepTime: 20
+cookTime: 12
+instructions: "1. Preheat oven to 375°F. 2. Cream butter and sugars. 3. Add eggs and vanilla. 4. Mix in flour, baking soda, and salt. 5. Fold in chocolate chips. 6. Drop dough on baking sheet. 7. Bake for 12 minutes until golden."
+createdAt: "2024-01-18 16:45:22"
+updatedAt: "2024-01-19 10:30:15"</code></pre>
+
+            <h4>Ingredients Table</h4>
+            <p><strong>Purpose</strong>: Store ingredients associated with each recipe including quantities and units.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field Name</th>
+                        <th>Data Type</th>
+                        <th>Constraints</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ingredientId</td>
+                        <td>INT</td>
+                        <td>PRIMARY KEY, AUTO_INCREMENT</td>
+                        <td>Unique identifier for each ingredient</td>
+                    </tr>
+                    <tr>
+                        <td>recipeId</td>
+                        <td>INT</td>
+                        <td>FOREIGN KEY → recipes(recipeId), NOT NULL</td>
+                        <td>Links ingredient to its recipe</td>
+                    </tr>
+                    <tr>
+                        <td>name</td>
+                        <td>VARCHAR(100)</td>
+                        <td>NOT NULL</td>
+                        <td>Ingredient name for display</td>
+                    </tr>
+                    <tr>
+                        <td>quantity</td>
+                        <td>DECIMAL(10,2)</td>
+                        <td>NOT NULL</td>
+                        <td>Amount of ingredient needed</td>
+                    </tr>
+                    <tr>
+                        <td>unit</td>
+                        <td>VARCHAR(20)</td>
+                        <td>NOT NULL</td>
+                        <td>Measurement unit (cups, grams, etc.)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p><strong>Sample Data</strong>:</p>
+            <pre><code>ingredientId: 1
+recipeId: 1
+name: "Spaghetti"
+quantity: 1.00
+unit: "pound"
+
+ingredientId: 2
+recipeId: 1
+name: "Eggs"
+quantity: 3.00
+unit: "large"
+
+ingredientId: 3
+recipeId: 1
+name: "Parmesan cheese"
+quantity: 1.00
+unit: "cup"
+
+ingredientId: 4
+recipeId: 2
+name: "All-purpose flour"
+quantity: 2.25
+unit: "cups"
+
+ingredientId: 5
+recipeId: 2
+name: "Chocolate chips"
+quantity: 2.00
+unit: "cups"</code></pre>
+
+            <h3>Data Relationships and Integrity</h3>
+            <h4>Referential Integrity</h4>
+            <p>The database implements comprehensive foreign key constraints:</p>
+            <ul>
+                <li><strong>Users → Recipes</strong>: One-to-Many (1:N) - Each user can create multiple recipes</li>
+                <li><strong>Recipes → Ingredients</strong>: One-to-Many (1:N) - Each recipe can have multiple ingredients</li>
+            </ul>
+
+            <h4>Cascading Operations</h4>
+            <ul>
+                <li><strong>User Deletion</strong>: CASCADE - Automatically removes all user's recipes and their ingredients</li>
+                <li><strong>Recipe Deletion</strong>: CASCADE - Automatically removes all associated ingredients</li>
+            </ul>
+
+            <h4>Data Validation</h4>
+            <ul>
+                <li><strong>Username/Email Uniqueness</strong>: Enforced at database level</li>
+                <li><strong>Required Fields</strong>: NOT NULL constraints on essential data</li>
+                <li><strong>Positive Values</strong>: Application-level validation for times and quantities</li>
+            </ul>
+
+            <h3>Indexing Strategy</h3>
+            <pre><code class="lang-sql">-- Primary indexes (automatically created)
+PRIMARY KEY indexes on all ID fields
+
+-- Performance indexes
+CREATE INDEX idx_recipes_user ON recipes(userId);
+CREATE INDEX idx_recipes_category ON recipes(category);
+CREATE INDEX idx_recipes_name ON recipes(name);
+CREATE INDEX idx_ingredients_recipe ON ingredients(recipeId);
+CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_email ON users(email);</code></pre>
+
+            <h2 id="explanation-of-secondary-storage-design">2.5 Explanation of Secondary Storage Design</h2>
+
+            <h3>Justification of Database Choice</h3>
+            <p>I chose <strong>MySQL relational database</strong> as the secondary storage solution for the Recipe Manager application based on several critical requirements and advantages over alternative storage approaches.</p>
+
+            <h3>Why MySQL Database:</h3>
+
+            <p><strong>Data Relationships and Integrity:</strong> The Recipe Manager application has inherent relational data - users create recipes, recipes contain multiple ingredients, and these relationships must be maintained consistently. MySQL's relational model naturally represents these connections through foreign keys. When a user is deleted, all their recipes and ingredients are automatically removed through CASCADE constraints, preventing orphaned data that could corrupt the application state.</p>
+
+            <p><strong>Query Flexibility and Search Capabilities:</strong> The application requires sophisticated data retrieval including recipe filtering by category, searching by name, and joining recipe data with ingredients for display. SQL's powerful query language enables complex operations like:</p>
+            <ul>
+                <li>Finding all recipes in a specific category with their ingredient counts</li>
+                <li>Searching recipes by name with case-insensitive matching</li>
+                <li>Retrieving complete recipe details including all ingredients in a single query</li>
+                <li>Generating user statistics for dashboard display</li>
+            </ul>
+
+            <p><strong>Data Security and Authentication:</strong> User authentication requires secure password storage with hashing and salting. MySQL provides robust security features including user privilege management, secure password storage capabilities, and protection against SQL injection through prepared statements. The database handles sensitive user credentials with industry-standard security measures.</p>
+
+            <p><strong>Backup and Data Export:</strong> Recipe data represents significant user investment in time and effort. MySQL offers comprehensive backup solutions including automated backups, point-in-time recovery, and structured data export (JSON format for recipe sharing). This ensures data durability and supports the application's import/export features.</p>
+
+            <p><strong>Performance and Scalability:</strong> As users create more recipes and ingredients, the database must maintain responsive performance. MySQL's indexing capabilities, query optimization, and mature caching mechanisms ensure the application remains fast. Connection pooling and prepared statement caching provide efficiency for repetitive operations.</p>
+
+            <h3>Disadvantages of Alternative Approaches:</h3>
+
+            <p><strong>Text Files:</strong> Would require complex custom parsing logic for structured recipe data, lack concurrent access control (multiple users could corrupt files), provide no relationship enforcement (ingredients could be orphaned from recipes), and make search operations extremely inefficient requiring full file scans.</p>
+
+            <p><strong>JSON Files:</strong> While more structured than plain text, JSON storage lacks query capabilities, relationship validation, and concurrent access control. Finding recipes by category would require loading entire files into memory and parsing all data, leading to poor performance as recipe collections grow.</p>
+
+            <p><strong>Binary Files:</strong> Would require custom serialization/deserialization logic, be platform-dependent, lack human readability for debugging, and provide no built-in backup or recovery mechanisms.</p>
+
+            <p><strong>NoSQL Databases:</strong> Although flexible, the Recipe Manager's data has well-defined, stable relationships that benefit from SQL's relational model. The overhead of learning and configuring NoSQL solutions would not provide proportional benefits for this application's straightforward relational requirements.</p>
+
+            <p><strong>Performance and Maintenance Implications:</strong> MySQL's mature ecosystem provides excellent development and debugging tools, comprehensive documentation, and widespread community support. Query performance can be monitored and optimized through indexing strategies. The structured nature of relational data makes troubleshooting more straightforward than unstructured alternatives.</p>
+
+            <p>The MySQL database solution provides optimal functionality, security, and maintainability for the Recipe Manager's data management requirements while supporting future enhancements like recipe sharing, ratings, or collaborative features.</p>
+            <h2>2.6 Explanation of how Primary Data Structures relate to Secondary Storage</h2>
+
+<h3>User Data Structure Mapping</h3>
+<h4>Primary Data Structure: User Account Management</h4>
+<ul>
+<li><strong>Class</strong>: <code>User.java</code> (POJO with validation)</li>
+<li><strong>Related Classes</strong>: <code>UserManager.java</code> for business logic, <code>SignInPage.java</code> and <code>RegistrationDialog.java</code> for UI</li>
+</ul>
+
+<h4>Secondary Storage Mapping: <code>users</code> Table</h4>
+<p><strong>Table Structure:</strong></p>
+<pre><code class="lang-sql">CREATE TABLE users (
+    userId INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+</code></pre>
+
+<p><strong>Data Writing Process:</strong></p>
+<ol>
+<li><p><strong>User Registration</strong>: When a new user registers through <code>RegistrationDialog</code>, the following occurs:</p>
+<ul>
+<li>User input (username, email, password) is collected from GUI components</li>
+<li><code>UserManager.addUser(String username, String password, String email)</code> is called</li>
+<li>Password is hashed using PBKDF2 algorithm for security</li>
+<li><p>Data is inserted using PreparedStatement:</p>
+<pre><code class="lang-sql">INSERT INTO users (username, password, email) 
+VALUES (?, ?, ?)
+</code></pre>
+</li>
+</ul>
+</li>
+</ol>
+
+<p><strong>Data Reading Process:</strong></p>
+<ol>
+<li><p><strong>Authentication</strong>: During login process:</p>
+<ul>
+<li><code>UserManager.validateLogin(String username, String password)</code> is called</li>
+<li><p>User's stored password hash is retrieved using:</p>
+<pre><code class="lang-sql">SELECT userId, password FROM users WHERE username = ?</code></pre>
+</li>
+<li>Input password is hashed and compared with stored hash</li>
+<li>Upon successful validation, user session is established</li>
+</ul>
+</li>
+</ol>
+
+<p><strong>Data Representation:</strong></p>
+<ul>
+<li>In Memory: <code>User</code> object contains <code>userId</code> (int), <code>username</code> (String), <code>email</code> (String), <code>createdAt</code> (Timestamp)</li>
+<li>In Storage: Relational record with normalized fields and proper data types</li>
+<li>Security: Passwords stored as PBKDF2 hashed values, never in plain text</li>
+</ul>
+
+<h3>Recipe Data Structure Mapping</h3>
+<h4>Primary Data Structure: Recipe Management</h4>
+<ul>
+<li><strong>Classes</strong>: <code>Recipe.java</code> (POJO), <code>RecipeManager.java</code> (business logic)</li>
+<li><strong>GUI Components</strong>: <code>HomePage.java</code> for display, <code>RecipeEditorPage.java</code> for creation/editing</li>
+</ul>
+
+<h4>Secondary Storage Mapping: <code>recipes</code> Table</h4>
+<p><strong>Table Structure:</strong></p>
+<pre><code class="lang-sql">CREATE TABLE recipes (
+    recipeId INT PRIMARY KEY AUTO_INCREMENT,
+    userId INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    category VARCHAR(100) DEFAULT NULL,
+    prepTime INT DEFAULT NULL,
+    cookTime INT DEFAULT NULL,
+    instructions TEXT,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
+);
+</code></pre>
+
+<p><strong>Data Writing Process:</strong></p>
+<ol>
+<li><p><strong>Creating Recipes</strong>:</p>
+<ul>
+<li>User fills form in <code>RecipeEditorPage</code> (name, category, prep time, cook time, instructions)</li>
+<li><code>RecipeManager.addRecipe(Recipe recipe)</code> is called with populated Recipe object</li>
+<li>Data validation occurs at model level through Recipe setters</li>
+<li><p>PreparedStatement executes:</p>
+<pre><code class="lang-sql">INSERT INTO recipes (userId, name, category, prepTime, cookTime, instructions) 
+VALUES (?, ?, ?, ?, ?, ?)
+</code></pre>
+</li>
+<li>Returns generated <code>recipeId</code> for immediate use</li>
+</ul>
+</li>
+</ol>
+
+<p><strong>Data Reading Process:</strong></p>
+<ol>
+<li><p><strong>Retrieving Recipes</strong>:</p>
+<ul>
+<li><code>RecipeManager.getRecipesByUserId(int userId)</code> retrieves user-specific recipes</li>
+<li><p>For homepage display, recipes are fetched with filtering options:</p>
+<pre><code class="lang-sql">SELECT * FROM recipes WHERE userId = ? 
+AND name LIKE ? AND category = ? 
+ORDER BY updatedAt DESC
+</code></pre>
+</li>
+<li>ResultSet data is mapped to <code>Recipe</code> objects</li>
+<li>Data displayed in JTable with search and category filtering capabilities</li>
+</ul>
+</li>
+</ol>
+
+<p><strong>Data Representation:</strong></p>
+<ul>
+<li>In Memory: <code>Recipe</code> objects with fields matching database columns</li>
+<li>In Storage: Normalized relational data with foreign key relationships to users</li>
+<li>Display: Table format with sorting, searching, and filtering capabilities</li>
+</ul>
+
+<h3>Ingredient Data Structure Mapping</h3>
+<h4>Primary Data Structure: Ingredient Management</h4>
+<ul>
+<li><strong>Classes</strong>: <code>Ingredient.java</code> (POJO), <code>IngredientManager.java</code> (business logic)</li>
+<li><strong>GUI Components</strong>: <code>IngredientDialog.java</code> for creation/editing within <code>RecipeEditorPage</code></li>
+</ul>
+
+<h4>Secondary Storage Mapping: <code>ingredients</code> Table</h4>
+<p><strong>Table Structure:</strong></p>
+<pre><code class="lang-sql">CREATE TABLE ingredients (
+    ingredientId INT PRIMARY KEY AUTO_INCREMENT,
+    recipeId INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    quantity DECIMAL(10,2),
+    unit VARCHAR(50),
+    FOREIGN KEY (recipeId) REFERENCES recipes(recipeId) ON DELETE CASCADE
+);
+</code></pre>
+
+<p><strong>Data Writing Process:</strong></p>
+<ol>
+<li><p><strong>Creating Ingredients</strong>:</p>
+<ul>
+<li>User adds ingredients through <code>IngredientDialog</code> within recipe editing</li>
+<li><code>IngredientManager.addIngredient(Ingredient ingredient)</code> processes the request</li>
+<li>Validation ensures ingredient is linked to valid recipe</li>
+<li><p>PreparedStatement insertion:</p>
+<pre><code class="lang-sql">INSERT INTO ingredients (recipeId, name, quantity, unit) 
+VALUES (?, ?, ?, ?)
+</code></pre>
+</li>
+</ul>
+</li>
+</ol>
+
+<p><strong>Data Reading Process:</strong></p>
+<ol>
+<li><p><strong>Retrieving Ingredients</strong>:</p>
+<ul>
+<li><code>IngredientManager.getIngredientsByRecipeId(int recipeId)</code> fetches recipe-specific ingredients</li>
+<li><p>Query retrieves all ingredients for a recipe:</p>
+<pre><code class="lang-sql">SELECT * FROM ingredients WHERE recipeId = ? 
+ORDER BY ingredientId
+</code></pre>
+</li>
+<li>Results mapped to <code>Ingredient</code> objects for display in ingredient table</li>
+</ul>
+</li>
+</ol>
+
+<p><strong>Data Representation:</strong></p>
+<ul>
+<li>In Memory: <code>Ingredient</code> collections associated with specific recipes</li>
+<li>In Storage: Relational data with foreign key constraints to recipes</li>
+<li>Display: Table format within recipe editor for easy management</li>
+</ul>
+
+<h3>Timer Data Structure Mapping</h3>
+<h4>Primary Data Structure: Timer Management</h4>
+<ul>
+<li><strong>Classes</strong>: <code>TimerManager.java</code> (in-memory service)</li>
+<li><strong>Integration</strong>: Embedded in <code>RecipeEditorPage</code> for cooking assistance</li>
+</ul>
+
+<h4>In-Memory Storage: No Persistent Storage</h4>
+<p><strong>Data Structure:</strong></p>
+<ul>
+<li>Thread-safe in-memory management of concurrent timers</li>
+<li>Uses callback system for UI updates</li>
+<li>Stateful timer objects maintained during application session</li>
+</ul>
+
+<p><strong>Data Operations:</strong></p>
+<ol>
+<li><strong>Timer Creation and Management</strong>:<ul>
+<li>Timers created on-demand through UI interaction</li>
+<li>State maintained in memory with thread-safe operations</li>
+<li>No database persistence - timers are session-only</li>
+</ul>
+</li>
+</ol>
+
+<h3>File Import/Export Data Structure Mapping</h3>
+<h4>Primary Data Structure: File Management</h4>
+<ul>
+<li><strong>Classes</strong>: <code>FileManager.java</code> (static utility methods)</li>
+<li><strong>Integration</strong>: Accessible through <code>SettingsPage</code> for data backup/restore</li>
+</ul>
+
+<h4>File Storage: JSON Format</h4>
+<p><strong>Data Export Process:</strong></p>
+<ol>
+<li><p><strong>Recipe Export</strong>:</p>
+<ul>
+<li>User clicks "Export" in <code>SettingsPage</code></li>
+<li><code>FileManager.exportRecipes(int userId)</code> retrieves all user recipes and ingredients</li>
+<li>Data serialized to structured JSON format</li>
+<li>File written to user-selected location</li>
+</ul>
+</li>
+</ol>
+
+<p><strong>Data Import Process:</strong></p>
+<ol>
+<li><p><strong>Recipe Import</strong>:</p>
+<ul>
+<li>User selects JSON file through file chooser</li>
+<li><code>FileManager.importRecipes(String filePath, int userId)</code> processes the file</li>
+<li>JSON data parsed and validated</li>
+<li>Recipes and ingredients inserted using <code>RecipeManager</code> and <code>IngredientManager</code></li>
+</ul>
+</li>
+</ol>
+
+<p><strong>Data Representation:</strong></p>
+<ul>
+<li>In Memory: Temporary objects during import/export operations</li>
+<li>In Files: Structured JSON format preserving all recipe and ingredient data</li>
+<li>Cross-compatibility: JSON format allows data portability</li>
+</ul>
+
+<h3>Database Connection and Management</h3>
+<h4>Primary Data Structure: Database Abstraction Layer</h4>
+<ul>
+<li><strong>Classes</strong>: <code>DatabaseConnector.java</code> (connection management)</li>
+</ul>
+
+<h4>Connection Management:</h4>
+<ol>
+<li><strong>Connection Establishment</strong>:<ul>
+<li><code>DatabaseConnector.getConnection()</code> creates MySQL connection using JDBC</li>
+<li>Automatic table creation on first run</li>
+<li>Connection parameters configured for local MySQL instance</li>
+</ul>
+</li>
+<li><strong>Transaction Management</strong>:<ul>
+<li>PreparedStatements used throughout for SQL injection prevention</li>
+<li>Transaction support for multi-table operations (e.g., recipe deletion with ingredients)</li>
+<li>Proper resource cleanup via try-with-resources patterns</li>
+</ul>
+</li>
+</ol>
+
+<p><strong>Data Integrity Features:</strong></p>
+<ul>
+<li>Foreign key constraints maintain referential integrity</li>
+<li>Cascade deletions ensure data consistency</li>
+<li>Transaction rollback capabilities for complex operations</li>
+<li>Input validation at multiple layers (UI, business logic, database)</li>
+</ul>
+
+<p><strong>Data Flow Summary:</strong></p>
+<ol>
+<li><strong>Input Collection</strong> → <strong>Data Validation</strong> → <strong>Business Logic Processing</strong> → <strong>Database Operation</strong> → <strong>Result Processing</strong> → <strong>UI Update</strong></li>
+<li><strong>Error Handling</strong>: Database exceptions caught and user-friendly messages displayed</li>
+<li><strong>Performance</strong>: Efficient queries and proper indexing on primary and foreign keys</li>
+<li><strong>Scalability</strong>: Modular architecture allows for future enhancements and database system changes</li>
+</ol>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Daniel French</p>
+        </footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+        document.addEventListener('DOMContentLoaded', () => {
+            const mermaidElements = document.querySelectorAll('.mermaid');
+
+            mermaidElements.forEach((element, i) => {
+                const container = element.closest('.mermaid-container');
+                let panzoomInstance = null;
+
+                const toggleSwitch = document.createElement('div');
+                toggleSwitch.className = 'zoom-toggle';
+                toggleSwitch.innerHTML = `
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider round"></span>
+                    </label>
+                    <span>Enable Zoom & Pan</span>
+                `;
+
+                const resetButton = document.createElement('button');
+                resetButton.innerHTML = 'Reset';
+                resetButton.className = 'btn btn-reset';
+
+                const controls = document.createElement('div');
+                controls.className = 'mermaid-controls';
+                controls.appendChild(toggleSwitch);
+                controls.appendChild(resetButton);
+
+                container.insertBefore(controls, element);
+
+                const checkbox = toggleSwitch.querySelector('input');
+
+                const initializePanzoom = () => {
+                    if (panzoomInstance) panzoomInstance.destroy();
+                    panzoomInstance = Panzoom(element, {
+                        maxScale: 10,
+                        minScale: 0.5,
+                        contain: 'outside'
+                    });
+                    element.parentElement.addEventListener('wheel', panzoomInstance.zoomWithWheel);
+                    element.style.cursor = 'grab';
+                };
+
+                const destroyPanzoom = () => {
+                    if (panzoomInstance) {
+                        panzoomInstance.destroy();
+                        panzoomInstance = null;
+                    }
+                    element.parentElement.removeEventListener('wheel', () => {});
+                    element.style.cursor = 'auto';
+                };
+
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked) {
+                        initializePanzoom();
+                        resetButton.disabled = false;
+                    } else {
+                        destroyPanzoom();
+                        resetButton.disabled = true;
+                    }
+                });
+
+                resetButton.addEventListener('click', () => {
+                    if (panzoomInstance) {
+                        panzoomInstance.reset();
+                    }
+                });
+
+                element.addEventListener('dblclick', () => {
+                    if (panzoomInstance) {
+                        panzoomInstance.reset();
+                    }
+                });
+
+                // Initial state
+                if (checkbox.checked) {
+                    initializePanzoom();
+                } else {
+                    resetButton.disabled = true;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
