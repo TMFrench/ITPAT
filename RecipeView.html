@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Editor</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .main-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4682B4;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .section {
+            border: 1px solid gray;
+            margin-bottom: 15px;
+            background: white;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            font-size: 14px;
+            background: white;
+            padding: 0 5px;
+            margin: -8px 0 0 10px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-content {
+            padding: 15px;
+        }
+        
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 15px;
+        }
+        
+        .form-row label {
+            min-width: 120px;
+            font-size: 14px;
+        }
+        
+        .form-row input, .form-row select {
+            font-size: 14px;
+            padding: 5px 8px;
+            border: 1px solid gray;
+            flex: 1;
+        }
+        
+        .form-row input[type="number"] {
+            width: 80px;
+            flex: none;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .instructions-area {
+            width: 100%;
+            height: 200px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            padding: 5px;
+            border: 1px inset #ccc;
+            resize: vertical;
+        }
+        
+        .ingredients-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+        
+        .ingredients-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ccc;
+        }
+        
+        .ingredients-table td {
+            padding: 8px;
+            border: 1px solid #ccc;
+            height: 25px;
+        }
+        
+        .ingredients-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .ingredient-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn {
+            font-weight: bold;
+            font-size: 11px;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 2px;
+        }
+        
+        .btn:hover {
+            filter: brightness(1.1);
+        }
+        
+        .btn-primary { background-color: #4682B4; }
+        .btn-secondary { background-color: #808080; }
+        .btn-info { background-color: #5F9EA0; }
+        .btn-warning { background-color: #FFA500; }
+        .btn-danger { background-color: #DC143C; }
+        .btn-success { background-color: #228B22; }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .timer-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .timer-display {
+            text-align: center;
+        }
+        
+        .timer-time {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            font-weight: bold;
+            color: #4682B4;
+            margin: 0;
+        }
+        
+        .timer-status {
+            font-style: italic;
+            font-size: 12px;
+            color: gray;
+            margin: 5px 0 0 0;
+        }
+        
+        .timer-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .error-message {
+            text-align: center;
+            color: red;
+            font-size: 12px;
+            margin: 10px 0;
+            min-height: 16px;
+        }
+        
+        .action-buttons {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .action-buttons .btn {
+            margin: 0 7px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+            
+            .timer-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <h1 class="page-title">Add New Recipe</h1>
+        
+        <!-- Recipe Information Section -->
+        <div class="section">
+            <div class="section-title">Recipe Information</div>
+            <div class="section-content">
+                <div class="form-row">
+                    <label for="recipe-name">Recipe Name:</label>
+                    <input type="text" id="recipe-name" placeholder="Enter recipe name">
+                </div>
+                <div class="form-row">
+                    <label for="category">Category:</label>
+                    <select id="category">
+                        <option value="Appetizer">Appetizer</option>
+                        <option value="Main Course">Main Course</option>
+                        <option value="Side Dish">Side Dish</option>
+                        <option value="Dessert">Dessert</option>
+                        <option value="Beverage">Beverage</option>
+                        <option value="Breakfast">Breakfast</option>
+                        <option value="Lunch">Lunch</option>
+                        <option value="Dinner">Dinner</option>
+                        <option value="Snack">Snack</option>
+                        <option value="Soup">Soup</option>
+                        <option value="Salad">Salad</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <label for="prep-time">Prep Time (min):</label>
+                    <input type="number" id="prep-time" value="0" min="0" max="999">
+                </div>
+                <div class="form-row">
+                    <label for="cook-time">Cook Time (min):</label>
+                    <input type="number" id="cook-time" value="0" min="0" max="999">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Two Column Layout for Instructions and Ingredients -->
+        <div class="two-column">
+            <!-- Instructions Section -->
+            <div class="section">
+                <div class="section-title">Instructions</div>
+                <div class="section-content">
+                    <textarea class="instructions-area" placeholder="Enter cooking instructions..."></textarea>
+                </div>
+            </div>
+            
+            <!-- Ingredients Section -->
+            <div class="section">
+                <div class="section-title">Ingredients</div>
+                <div class="section-content">
+                    <table class="ingredients-table">
+                        <thead>
+                            <tr>
+                                <th>Ingredient</th>
+                                <th>Quantity</th>
+                                <th>Unit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Flour</td>
+                                <td>2</td>
+                                <td>cups</td>
+                            </tr>
+                            <tr>
+                                <td>Sugar</td>
+                                <td>1</td>
+                                <td>cup</td>
+                            </tr>
+                            <tr>
+                                <td>Eggs</td>
+                                <td>3</td>
+                                <td>pieces</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="ingredient-buttons">
+                        <button class="btn btn-info">Add Ingredient</button>
+                        <button class="btn btn-warning" disabled>Edit Ingredient</button>
+                        <button class="btn btn-danger" disabled>Remove Ingredient</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cooking Timer Section -->
+        <div class="section">
+            <div class="section-title">Cooking Timer</div>
+            <div class="section-content">
+                <div class="timer-section">
+                    <div class="timer-display">
+                        <div class="timer-time">00:00:00</div>
+                        <div class="timer-status">Timer not started</div>
+                    </div>
+                    <div class="timer-buttons">
+                        <button class="btn btn-success">Start Cooking Timer</button>
+                        <button class="btn btn-danger" disabled>Stop Timer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Error Message -->
+        <div class="error-message">&nbsp;</div>
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-primary">Save Recipe</button>
+            <button class="btn btn-secondary">Cancel</button>
+        </div>
+    </div>
+</body>
+</html>
