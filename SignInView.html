@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-container {
+            background-color: white;
+            padding: 30px 40px;
+            width: 400px;
+            max-width: 90vw;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4682B4;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            font-weight: bold;
+            font-size: 14px;
+            color: black;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 14px;
+            border: 1px solid gray;
+            background-color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .password-container {
+            position: relative;
+            display: flex;
+        }
+
+        .password-input {
+            flex: 1;
+            border-right: none;
+        }
+
+        .password-toggle {
+            width: 30px;
+            height: 38px;
+            border: 1px solid gray;
+            border-left: none;
+            background-color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .password-toggle:hover {
+            background-color: #f5f5f5;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 12px;
+            text-align: center;
+            height: 20px;
+            line-height: 20px;
+            margin-bottom: 15px;
+        }
+
+        .success-message {
+            color: #008000;
+            font-size: 12px;
+            text-align: center;
+            height: 20px;
+            line-height: 20px;
+            margin-bottom: 15px;
+        }
+
+        .loading-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+
+        .loading-bar.active {
+            display: block;
+        }
+
+        .loading-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #4682B4, transparent);
+            animation: loading 1.5s infinite;
+        }
+
+        .loading-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            color: black;
+            z-index: 1;
+        }
+
+        @keyframes loading {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .btn {
+            padding: 0;
+            width: 120px;
+            height: 40px;
+            border: none;
+            cursor: pointer;
+            margin: 0 7.5px;
+            font-family: Arial, sans-serif;
+        }
+
+        .btn-login {
+            background-color: #4682B4;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .btn-register {
+            background-color: #5F9EA0;
+            color: white;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background-color: white;
+            width: 400px;
+            max-width: 90vw;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            padding: 20px 25px 0 25px;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #5F9EA0;
+            margin-bottom: 20px;
+        }
+
+        .modal-content {
+            padding: 0 25px 20px 25px;
+        }
+
+        .modal-form-group {
+            margin-bottom: 15px;
+        }
+
+        .modal-form-label {
+            font-weight: bold;
+            font-size: 12px;
+            color: black;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .modal-form-input {
+            width: 100%;
+            padding: 5px 8px;
+            font-size: 12px;
+            border: 1px solid gray;
+            background-color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .modal-error {
+            color: red;
+            font-size: 11px;
+            text-align: center;
+            height: 15px;
+            line-height: 15px;
+            margin-bottom: 10px;
+        }
+
+        .modal-loading-bar {
+            width: 100%;
+            height: 18px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+
+        .modal-loading-bar.active {
+            display: block;
+        }
+
+        .modal-loading-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #5F9EA0, transparent);
+            animation: loading 1.5s infinite;
+        }
+
+        .modal-loading-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            color: black;
+            z-index: 1;
+        }
+
+        .modal-buttons {
+            background-color: white;
+            padding: 15px;
+            text-align: center;
+            border-top: none;
+        }
+
+        .modal-btn {
+            padding: 0;
+            width: 100px;
+            height: 35px;
+            border: none;
+            cursor: pointer;
+            margin: 0 5px;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        .modal-btn-submit {
+            background-color: #5F9EA0;
+            color: white;
+            font-weight: bold;
+        }
+
+        .modal-btn-cancel {
+            background-color: gray;
+            color: white;
+        }
+
+        .modal-btn:hover {
+            opacity: 0.9;
+        }
+
+        .modal-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="title">Recipe Manager</div>
+        
+        <div class="form-group">
+            <label class="form-label">Username:</label>
+            <input type="text" class="form-input" id="username" placeholder="">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Password:</label>
+            <div class="password-container">
+                <input type="password" class="form-input password-input" id="password" placeholder="">
+                <button class="password-toggle" id="togglePassword">👁</button>
+            </div>
+        </div>
+        
+        <div class="error-message" id="errorMessage">&nbsp;</div>
+        
+        <div class="loading-bar" id="loadingBar">
+            <div class="loading-text">Authenticating...</div>
+        </div>
+        
+        <div class="button-container">
+            <button class="btn btn-login" id="loginBtn">Login</button>
+            <button class="btn btn-register" id="registerBtn">Register</button>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Create New Account</div>
+            </div>
+            
+            <div class="modal-content">
+                <div class="modal-form-group">
+                    <label class="modal-form-label">Username:</label>
+                    <input type="text" class="modal-form-input" id="regUsername" placeholder="">
+                </div>
+                
+                <div class="modal-form-group">
+                    <label class="modal-form-label">Email:</label>
+                    <input type="email" class="modal-form-input" id="regEmail" placeholder="">
+                </div>
+                
+                <div class="modal-form-group">
+                    <label class="modal-form-label">Password:</label>
+                    <input type="password" class="modal-form-input" id="regPassword" placeholder="">
+                </div>
+                
+                <div class="modal-form-group">
+                    <label class="modal-form-label">Confirm Password:</label>
+                    <input type="password" class="modal-form-input" id="regConfirmPassword" placeholder="">
+                </div>
+                
+                <div class="modal-error" id="modalError">&nbsp;</div>
+                
+                <div class="modal-loading-bar" id="modalLoadingBar">
+                    <div class="modal-loading-text">Creating account...</div>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-submit" id="submitBtn">Register</button>
+                <button class="modal-btn modal-btn-cancel" id="cancelBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const togglePasswordBtn = document.getElementById('togglePassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const loadingBar = document.getElementById('loadingBar');
+        
+        // Modal elements
+        const modalOverlay = document.getElementById('modalOverlay');
+        const regUsernameInput = document.getElementById('regUsername');
+        const regEmailInput = document.getElementById('regEmail');
+        const regPasswordInput = document.getElementById('regPassword');
+        const regConfirmPasswordInput = document.getElementById('regConfirmPassword');
+        const submitBtn = document.getElementById('submitBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const modalError = document.getElementById('modalError');
+        const modalLoadingBar = document.getElementById('modalLoadingBar');
+        
+        let passwordVisible = false;
+        
+        // Password visibility toggle
+        togglePasswordBtn.addEventListener('click', function() {
+            passwordVisible = !passwordVisible;
+            if (passwordVisible) {
+                passwordInput.type = 'text';
+                togglePasswordBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                togglePasswordBtn.textContent = '👁';
+            }
+        });
+        
+        // Login button functionality
+        loginBtn.addEventListener('click', function() {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            
+            if (!validateLogin(username, password)) {
+                return;
+            }
+            
+            setLoading(true);
+            
+            // Simulate authentication delay
+            setTimeout(() => {
+                setLoading(false);
+                if (username === 'admin' && password === 'password') {
+                    showSuccess('Login successful!');
+                } else {
+                    showError('Invalid username or password');
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            }, 1000);
+        });
+        
+        // Register button functionality
+        registerBtn.addEventListener('click', function() {
+            modalOverlay.classList.add('active');
+            regUsernameInput.focus();
+        });
+        
+        // Modal close functionality
+        cancelBtn.addEventListener('click', function() {
+            modalOverlay.classList.remove('active');
+            clearRegistrationForm();
+        });
+        
+        // Modal overlay click to close
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('active');
+                clearRegistrationForm();
+            }
+        });
+        
+        // Registration submit functionality
+        submitBtn.addEventListener('click', function() {
+            const regUsername = regUsernameInput.value.trim();
+            const regEmail = regEmailInput.value.trim();
+            const regPassword = regPasswordInput.value;
+            const regConfirmPassword = regConfirmPasswordInput.value;
+            
+            if (!validateRegistration(regUsername, regEmail, regPassword, regConfirmPassword)) {
+                return;
+            }
+            
+            setModalLoading(true);
+            
+            // Simulate registration delay
+            setTimeout(() => {
+                setModalLoading(false);
+                modalOverlay.classList.remove('active');
+                clearRegistrationForm();
+                usernameInput.value = '';
+                passwordInput.value = '';
+                showSuccess('Registration successful! Please log in with your new account.');
+                usernameInput.focus();
+            }, 1500);
+        });
+        
+        // Enter key listeners
+        [usernameInput, passwordInput].forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    loginBtn.click();
+                }
+            });
+        });
+        
+        [regUsernameInput, regEmailInput, regPasswordInput, regConfirmPasswordInput].forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitBtn.click();
+                } else if (e.key === 'Escape') {
+                    cancelBtn.click();
+                }
+            });
+        });
+        
+        // Clear error messages when typing
+        [usernameInput, passwordInput].forEach(input => {
+            input.addEventListener('input', clearErrorMessage);
+        });
+        
+        [regUsernameInput, regEmailInput, regPasswordInput, regConfirmPasswordInput].forEach(input => {
+            input.addEventListener('input', clearModalError);
+        });
+        
+        // Validation functions
+        function validateLogin(username, password) {
+            clearErrorMessage();
+            
+            if (!username) {
+                showError('Please enter a username');
+                usernameInput.focus();
+                return false;
+            }
+            
+            if (username.length < 3) {
+                showError('Username must be at least 3 characters long');
+                usernameInput.focus();
+                return false;
+            }
+            
+            if (!password) {
+                showError('Please enter a password');
+                passwordInput.focus();
+                return false;
+            }
+            
+            if (password.length < 6) {
+                showError('Password must be at least 6 characters long');
+                passwordInput.focus();
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function validateRegistration(username, email, password, confirmPassword) {
+            clearModalError();
+            
+            if (!username) {
+                showModalError('Please enter a username');
+                regUsernameInput.focus();
+                return false;
+            }
+            
+            if (username.length < 3) {
+                showModalError('Username must be at least 3 characters long');
+                regUsernameInput.focus();
+                return false;
+            }
+            
+            if (!email) {
+                showModalError('Please enter an email address');
+                regEmailInput.focus();
+                return false;
+            }
+            
+            if (!isValidEmail(email)) {
+                showModalError('Please enter a valid email address');
+                regEmailInput.focus();
+                return false;
+            }
+            
+            if (!password) {
+                showModalError('Please enter a password');
+                regPasswordInput.focus();
+                return false;
+            }
+            
+            if (password.length < 6) {
+                showModalError('Password must be at least 6 characters long');
+                regPasswordInput.focus();
+                return false;
+            }
+            
+            if (!confirmPassword) {
+                showModalError('Please confirm your password');
+                regConfirmPasswordInput.focus();
+                return false;
+            }
+            
+            if (password !== confirmPassword) {
+                showModalError('Passwords do not match');
+                regConfirmPasswordInput.focus();
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function isValidEmail(email) {
+            return email.includes('@') && email.includes('.') && email.indexOf('@') < email.lastIndexOf('.');
+        }
+        
+        // UI helper functions
+        function setLoading(loading) {
+            if (loading) {
+                loadingBar.classList.add('active');
+            } else {
+                loadingBar.classList.remove('active');
+            }
+            
+            loginBtn.disabled = loading;
+            registerBtn.disabled = loading;
+            usernameInput.disabled = loading;
+            passwordInput.disabled = loading;
+            togglePasswordBtn.disabled = loading;
+        }
+        
+        function setModalLoading(loading) {
+            if (loading) {
+                modalLoadingBar.classList.add('active');
+            } else {
+                modalLoadingBar.classList.remove('active');
+            }
+            
+            submitBtn.disabled = loading;
+            cancelBtn.disabled = loading;
+            regUsernameInput.disabled = loading;
+            regEmailInput.disabled = loading;
+            regPasswordInput.disabled = loading;
+            regConfirmPasswordInput.disabled = loading;
+        }
+        
+        function showError(message) {
+            errorMessage.className = 'error-message';
+            errorMessage.textContent = message;
+        }
+        
+        function showSuccess(message) {
+            errorMessage.className = 'success-message';
+            errorMessage.textContent = message;
+        }
+        
+        function clearErrorMessage() {
+            errorMessage.textContent = '\u00A0';
+        }
+        
+        function showModalError(message) {
+            modalError.textContent = message;
+        }
+        
+        function clearModalError() {
+            modalError.textContent = '\u00A0';
+        }
+        
+        function clearRegistrationForm() {
+            regUsernameInput.value = '';
+            regEmailInput.value = '';
+            regPasswordInput.value = '';
+            regConfirmPasswordInput.value = '';
+            clearModalError();
+        }
+    </script>
+</body>
+</html>
