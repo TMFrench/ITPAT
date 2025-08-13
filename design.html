@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -68,32 +68,37 @@
                     <li><strong>Function:</strong> Primary container for sign-in interface</li>
                     <li><strong>Layout:</strong> GridBagLayout for centered component positioning</li>
                 </ul></li>
-                <li><strong><code>JTextField</code> (usernameField)</strong><ul>
+                <li><strong><code>JTextField</code> (txtUsername)</strong><ul>
                     <li><strong>Data Type:</strong> String (username)</li>
                     <li><strong>Validation:</strong> Non-empty username validation</li>
                     <li><strong>Placeholder:</strong> "Enter your username"</li>
                 </ul></li>
-                <li><strong><code>JPasswordField</code> (passwordField)</strong><ul>
+                <li><strong><code>JPasswordField</code> (txtPassword)</strong><ul>
                     <li><strong>Data Type:</strong> Secure string (password)</li>
                     <li><strong>Behavior:</strong> Character masking for security</li>
                     <li><strong>Placeholder:</strong> "Enter your password"</li>
                 </ul></li>
-                <li><strong><code>JButton</code> (loginButton)</strong><ul>
+                <li><strong><code>JButton</code> (btnLogin)</strong><ul>
                     <li><strong>Text:</strong> "Login"</li>
                     <li><strong>Function:</strong> Validate credentials and proceed to HomePage</li>
                     <li><strong>State:</strong> Enabled when both fields have content</li>
                 </ul></li>
-                <li><strong><code>JButton</code> (registerButton)</strong><ul>
+                <li><strong><code>JButton</code> (btnRegister)</strong><ul>
                     <li><strong>Text:</strong> "Register"</li>
                     <li><strong>Function:</strong> Opens RegistrationDialog for new user creation</li>
                     <li><strong>Action:</strong> Modal dialog with username, password, email fields</li>
                 </ul></li>
-                <li><strong><code>JLabel</code> (errorLabel)</strong><ul>
+                <li><strong><code>JButton</code> (btnTogglePassword)</strong><ul>
+                    <li><strong>Text:</strong> Eye Icon</li>
+                    <li><strong>Visibility:</strong> Toggles password field visibility between masked and plain text</li>
+                    <li><strong>Text:</strong> Visual feedback for password visibility state</li>
+                </ul></li>
+                <li><strong><code>JLabel</code> (lblError)</strong><ul>
                     <li><strong>Function:</strong> Display authentication error messages</li>
                     <li><strong>Visibility:</strong> Hidden by default, shown on error</li>
                     <li><strong>Styling:</strong> Red text for error indication</li>
                 </ul></li>
-                <li><strong><code>JProgressBar</code> (loadingIndicator)</strong><ul>
+                <li><strong><code>JProgressBar</code> (loadingBar    )</strong><ul>
                     <li><strong>Function:</strong> Shows loading state during authentication</li>
                     <li><strong>Behavior:</strong> Indeterminate progress for async operations</li>
                 </ul></li>
@@ -110,24 +115,79 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>usernameField</td>
+                        <td>txtUsername</td>
                         <td>Keyboard</td>
                         <td>Text input with real-time validation</td>
                     </tr>
                     <tr>
-                        <td>passwordField</td>
+                        <td>txtPassword</td>
                         <td>Keyboard</td>
                         <td>Secure text input with Enter key support</td>
                     </tr>
                     <tr>
-                        <td>loginButton</td>
+                        <td>btnLogin</td>
                         <td>Mouse/Keyboard</td>
                         <td>Authenticate user and navigate to main app</td>
                     </tr>
                     <tr>
-                        <td>registerButton</td>
+                        <td>btnRegister</td>
                         <td>Mouse/Keyboard</td>
                         <td>Open registration dialog for new users</td>
+                    </tr>
+                    <tr>
+                        <td>btnTogglePassword</td>
+                        <td>Mouse</td>
+                        <td>Toggle password visibility</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Registration Dialog(<code>RegistrationDialog.java</code>)</h4>
+            <p><strong>Modal Dialog Components:</strong></p>
+            <ol>
+                <li><strong><code>JTextField</code> (txtRegUsername)</strong><ul>
+                    <li><strong>Function:</strong> Single-line text field for entering a unique username</li>
+                    <li><strong>Validation:</strong> Username uniqueness check</li>
+                </ul></li>
+                <li><strong><code>JTextField</code> (txtRegEmail)</strong><ul>
+                    <li><strong>Function:</strong> Single-line text field for entering a valid email address</li>
+                    <li><strong>Validation:</strong> Email format validation</li>
+                </ul></li>
+                <li><strong><code>JPasswordField</code> (txtRegPassword)</strong><ul>
+                    <li><strong>Function:</strong> Secure password input field</li>
+                    <li><strong>Validation:</strong> Password strength requirements</li>
+                </ul></li>
+                <li><strong><code>JPasswordField</code> (txtConfirmPassword)</strong><ul>
+                    <li><strong>Function:</strong> Secure field to re-enter password for confirmation</li>
+                    <li><strong>Validation:</strong> Must match password field</li>
+                </ul></li>
+                <li><strong><code>JLabel</code> (lblRegError)</strong><ul>
+                    <li><strong>Function:</strong> Text label for showing validation errors</li>
+                    <li><strong>Examples:</strong> "Passwords do not match" or "Email already exists"</li>
+                </ul></li>
+                <li><strong><code>JProgressBar</code> (regLoadingBar)</strong><ul>
+                    <li><strong>Functiont:</strong> Progress bar active during asynchronous registration</li>
+                </ul></li>
+            </ol>
+            <p><strong>Action Elements:</strong></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Element</th>
+                        <th>Input Device</th>
+                        <th>Action Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>btnSubmit</td>
+                        <td>Mouse</td>
+                        <td>Validates inputs, encrypts password, adds user via UserManager</td>
+                    </tr>
+                    <tr>
+                        <td>btnSubmit</td>
+                        <td>Mouse</td>
+                        <td>Closes dialog without saving changes</td>
                     </tr>
                 </tbody>
             </table>
@@ -142,12 +202,12 @@
 ├─────────────────────────────────────────────────┤
 │ ┌─────────────────────────────────────────────┐ │
 │ │          RECIPES TABLE                      │ │
-│ │ ┌────────┬─────────┬───────┬─────────────┐  │ │
-│ │ │ Name   │Category │ Time  │ Instructions│  │ │
-│ │ ├────────┼─────────┼───────┼─────────────┤  │ │
-│ │ │Pasta   │Italian  │ 30min │ Boil water  │  │ │
-│ │ │Stir Fry│Asian    │ 15min │ Heat oil    │  │ │
-│ │ └────────┴─────────┴───────┴─────────────┘  │ │
+│ │ ┌────────┬─────────┬───────┬─────────┬─────┐│ │
+│ │ │ Name   │Category │ Prep  │ Cook    │Total││ │
+│ │ ├────────┼─────────┼───────┼─────────┼─────┤│ │
+│ │ │Pasta   │Italian  │ 15min │ 20min   │35min││ │
+│ │ │Stir Fry│Asian    │ 10min │ 15min   │25min││ │
+│ │ └────────┴─────────┴───────┴─────────┴─────┘│ │
 │ └─────────────────────────────────────────────┘ │
 ├─────────────────────────────────────────────────┤
 │ [Add Recipe] [Edit Recipe] [Delete Recipe]      │
@@ -160,31 +220,37 @@
                 <li><strong><code>JPanel</code> (mainPanel)</strong><ul>
                     <li><strong>Layout:</strong> BorderLayout with header, center, and button panels</li>
                 </ul></li>
-                <li><strong><code>JLabel</code> (welcomeLabel)</strong><ul>
+                <li><strong><code>JLabel</code> (lblWelcome)</strong><ul>
                     <li><strong>Text:</strong> "Welcome [Username] - Recipe Manager"</li>
                     <li><strong>Function:</strong> Personalized greeting with logged-in user</li>
+                </ul></li>
+                <li><strong><code>JLabel</code> (lblRecipeCount)</strong><ul>
+                    <li><strong>Function:</strong> Shows number of recipes (e.g., "You have 5 recipes")</li>
+                    <li><strong>Updates:</strong> Real-time count based on filtered results</li>
                 </ul></li>
                 <li><strong><code>JTextField</code> (searchField)</strong><ul>
                     <li><strong>Function:</strong> Filter recipes by name in real-time</li>
                     <li><strong>Features:</strong> Case-insensitive search functionality</li>
                     <li><strong>Placeholder:</strong> "Search recipes by name..."</li>
                 </ul></li>
-                <li><strong><code>JButton</code> (categoryButtons)</strong><ul>
-                    <li><strong>Categories:</strong> "Breakfast", "Lunch", "Dinner", "Dessert", "All"</li>
-                    <li><strong>Function:</strong> Filter recipe display by category</li>
-                    <li><strong>Styling:</strong> Toggle appearance when selected</li>
+                <li><strong><code>JPanel</code> (categoryPanel)</strong><ul>
+                    <li><strong>Contains:</strong> Dynamically generated category filter buttons</li>
+                    <li><strong>Categories:</strong> "All", "Dessert", "Main Course", etc.</li>
                 </ul></li>
-                <li><strong><code>JTable</code> (recipeTable)</strong><ul>
-                    <li><strong>Columns:</strong> Recipe Name, Category, Prep Time, Cook Time, Instructions</li>
+                <li><strong><code>JTable</code> (recipeTable) with <code>DefaultTableModel</code> (yableModel)</strong><ul>
+                    <li><strong>Columns:</strong> Name (String), Category (String), Prep Time (int), Cook Time (int), Total Time (int)</li>
                     <li><strong>Data Source:</strong> Populated from database via RecipeManager</li>
                     <li><strong>Selection:</strong> Single row selection for edit/delete operations</li>
-                    <li><strong>Sorting:</strong> Clickable column headers for data sorting</li>
+                    <li><strong>Sorting:</strong> Clickable column headers with<code>TableRowSorter</code> (tableSorter)</li>
                 </ul></li>
                 <li><strong><code>JScrollPane</code> (tableScrollPane)</strong><ul>
                     <li><strong>Function:</strong> Scrollable container for recipe table</li>
                     <li><strong>Behavior:</strong> Automatic scrollbars when needed</li>
                 </ul></li>
-                <li><strong><code>JButton</code> (addRecipeButton)</strong><ul>
+            </ol>
+            <p><strong>action Buttons:</strong></p>
+            <ol>
+                    <li><strong><code>JButton</code> (addRecipeButton)</strong><ul>
                     <li><strong>Text:</strong> "Add Recipe"</li>
                     <li><strong>Function:</strong> Opens RecipeEditorPage in create mode</li>
                 </ul></li>
@@ -207,7 +273,6 @@
                     <li><strong>Function:</strong> Return to SignInPage and clear session</li>
                 </ul></li>
             </ol>
-
             <p><strong>Action Elements:</strong></p>
             <table>
                 <thead>
@@ -234,17 +299,17 @@
                         <td>Row selection for edit/delete operations</td>
                     </tr>
                     <tr>
-                        <td>addRecipeButton</td>
+                        <td>btnAddRecipe</td>
                         <td>Mouse/Keyboard</td>
                         <td>Navigate to recipe creation form</td>
                     </tr>
                     <tr>
-                        <td>editRecipeButton</td>
+                        <td>btnEditRecipe</td>
                         <td>Mouse/Keyboard</td>
                         <td>Open selected recipe in editor</td>
                     </tr>
                     <tr>
-                        <td>deleteRecipeButton</td>
+                        <td>btnDeleteRecipe</td>
                         <td>Mouse/Keyboard</td>
                         <td>Delete selected recipe with confirmation</td>
                     </tr>
@@ -282,79 +347,65 @@
 │ │ ┌────────┬─────────┬───────┬─────────────┐  │ │
 │ │ │ Name   │Quantity │ Unit  │   Actions   │  │ │
 │ │ ├────────┼─────────┼───────┼─────────────┤  │ │
-│ │ │ Flour  │   2     │ cups  │[Edit][Del]  │  │ │
-│ │ │ Sugar  │   1     │ cup   │[Edit][Del]  │  │ │
+│ │ │ Flour  │   2.0   │ cups  │[Edit][Del]  │  │ │
+│ │ │ Sugar  │   1.0   │ cup   │[Edit][Del]  │  │ │
 │ │ └────────┴─────────┴───────┴─────────────┘  │ │
 │ │ [Add Ingredient]                            │ │
 │ └─────────────────────────────────────────────┘ │
 │ ┌─────────────────────────────────────────────┐ │
 │ │           COOKING TIMER                     │ │
-│ │ Time: [00:00:00]                            │ │
-│ │ [Start Timer] [Stop Timer] [Reset]          │ │
+│ │ Time: [00:00:00] Status: [Running]          │ │
+│ │ [Start Timer] [Stop Timer]                  │ │
 │ └─────────────────────────────────────────────┘ │
-│ [Save Recipe] [Cancel] [Back to Home]           │
+│ [Save] [Cancel]                                 │
 └─────────────────────────────────────────────────┘
             </code></pre>
             <iframe src="RecipeView.html" width="100%" height="700px" title="RecipeView"></iframe>
             <p><strong>GUI Components:</strong></p>
             <ol>
-                <li><strong><code>JTextField</code> (recipeNameField)</strong><ul>
+                <li><strong><code>JTextField</code> (txtRecipeName)</strong><ul>
                     <li><strong>Function:</strong> Recipe name input</li>
                     <li><strong>Validation:</strong> Non-empty name required</li>
                     <li><strong>Character limit:</strong> 255 characters</li>
                 </ul></li>
-                <li><strong><code>JComboBox</code> (categoryDropdown)</strong><ul>
+                <li><strong><code>JComboBox&lt;String&gt;</code> (cmbCategory)</strong><ul>
                     <li><strong>Options:</strong> "Breakfast", "Lunch", "Dinner", "Dessert", "Snack"</li>
                     <li><strong>Default:</strong> Pre-selected category for editing</li>
                 </ul></li>
-                <li><strong><code>JSpinner</code> (prepTimeSpinner)</strong><ul>
+                <li><strong><code>JSpinner</code> (spnPrepTime)</strong><ul>
                     <li><strong>Range:</strong> 1-999 minutes</li>
                     <li><strong>Default:</strong> 15 minutes</li>
                 </ul></li>
-                <li><strong><code>JSpinner</code> (cookTimeSpinner)</strong><ul>
+                <li><strong><code>JSpinner</code> (spnCookTime)</strong><ul>
                     <li><strong>Range:</strong> 1-999 minutes</li>
                     <li><strong>Default:</strong> 30 minutes</li>
                 </ul></li>
-                <li><strong><code>JTextArea</code> (instructionsArea)</strong><ul>
+                <li><strong><code>JTextArea</code> (txtInstructions) within <code>JScrollPane</code> (instructionsScrollPane)</strong><ul>
                     <li><strong>Function:</strong> Multi-line cooking instructions</li>
                     <li><strong>Properties:</strong> Word wrap, scrollable</li>
                     <li><strong>Placeholder:</strong> "Enter detailed cooking instructions..."</li>
                 </ul></li>
-                <li><strong><code>JTable</code> (ingredientsTable)</strong><ul>
+                <li><strong><code>JTable</code> (ingredientsTable) with <code>DefaultTableModel</code> (ingredientTableModel) within <code>JScrollPane</code> (ingredientScrollPane)</strong><ul>
                     <li><strong>Columns:</strong> Name, Quantity, Unit, Actions (Edit/Delete)</li>
                     <li><strong>Data Source:</strong> Ingredients associated with current recipe</li>
                     <li><strong>Editing:</strong> Inline editing or dialog-based modification</li>
                 </ul></li>
-                <li><strong><code>JButton</code> (addIngredientButton)</strong><ul>
-                    <li><strong>Text:</strong> "Add Ingredient"</li>
-                    <li><strong>Function:</strong> Opens IngredientDialog for new ingredient</li>
+                <li><strong>Timer Components</strong><ul>
+                    <li><strong><code>JLabel</code>(lblTimer):</strong> Shows remaining time in "HH:MM:SS" format</li>
+                    <li><strong><code>JLabel</code>(lblTimerStatus):</strong> Shows timer state ("Running", "Stopped")</li>
                 </ul></li>
-                <li><strong><code>JLabel</code> (timerDisplay)</strong><ul>
-                    <li><strong>Format:</strong> "HH:MM:SS"</li>
-                    <li><strong>Updates:</strong> Real-time countdown/countup display</li>
-                </ul></li>
-                <li><strong><code>JButton</code> (startTimerButton)</strong><ul>
-                    <li><strong>Text:</strong> "Start Timer"</li>
-                    <li><strong>Function:</strong> Begin cooking timer countdown</li>
-                </ul></li>
-                <li><strong><code>JButton</code> (stopTimerButton)</strong><ul>
-                    <li><strong>Text:</strong> "Stop Timer"</li>
-                    <li><strong>Function:</strong> Pause or stop active timer</li>
-                </ul></li>
-                <li><strong><code>JButton</code> (resetTimerButton)</strong><ul>
-                    <li><strong>Text:</strong> "Reset"</li>
-                    <li><strong>Function:</strong> Reset timer to 00:00:00</li>
-                </ul></li>
-                <li><strong><code>JButton</code> (saveButton)</strong><ul>
-                    <li><strong>Text:</strong> "Save Recipe"</li>
-                    <li><strong>Function:</strong> Save recipe and return to HomePage</li>
-                    <li><strong>Validation:</strong> Ensures all required fields are completed</li>
-                </ul></li>
-                <li><strong><code>JButton</code> (cancelButton)</strong><ul>
-                    <li><strong>Text:</strong> "Cancel"</li>
-                    <li><strong>Function:</strong> Discard changes and return to HomePage</li>
+                <li><strong><code>JLabel</code>lblErrorMessage</strong><ul>
+                    <li><strong><code>Function:</strong> Display validation errors (e.g., "Name is required")</li>
                 </ul></li>
             </ol>
+                <p><strong>Action Buttons:</strong></p>
+                <li><strong><code>JButton</code> (btnSave):</strong> Validates inputs, saves recipe via RecipeManager and IngredientManager</li>
+                <li><strong><code>JButton</code> (btnCancel):</strong> Prompts for confirmation and closes without saving</li>
+                <li><strong><code>JButton</code> (btnAddIngredient):</strong> Opens Ingredient Dialog in create mode</li>
+                <li><strong><code>JButton</code> (btnEditIngredient):</strong> Opens Ingredient Dialog in edit mode for selected row</li>
+                <li><strong><code>JButton</code> (btnRemoveIngredient):</strong> Removes selected ingredient with confirmation</li>
+                <li><strong><code>JButton</code> (btnStartTimer):</strong> Starts cooking timer via TimerManager</li>
+                <li><strong><code>JButton</code> (btnStopTimer):</strong> Stops or pauses active timer</li>
 
             <p><strong>Action Elements:</strong></p>
             <table>
