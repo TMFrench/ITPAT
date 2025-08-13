@@ -26,6 +26,8 @@
             <h1 id="design-document">Design Document</h1>
             <ul>
                 <li>2.1 User Interface Design</li>
+                <li>2.2 Program Flow Diagram</li>
+                <li>2.3 Class Design and OOP Principles</li>
                 <li>2.4 Secondary Storage Design</li>
                 <li>2.5 Explanation of Secondary Storage Design</li>
                 <li>2.6 Explanation of how Primary Data Structures relate to Secondary Storage</li>
@@ -563,221 +565,30 @@
             <h2 id="program-flow-diagram">2.2 Program Flow Diagram</h2>
             <div class="mermaid-container">
                 <pre class="mermaid">
-                       flowchart TD
-    %% Application Initialization
-    A([Start Application]) --> B[Main.java - Setup JFrame]
-    B --> C[(DatabaseConnector - Initialize MySQL)]
-    C --> D[(Auto-create Tables if Missing)]
-    D --> E{{Database Connected?}}
-    E -->|No| F[/Display Error Message/]
-    F --> G[End Application]
-    E -->|Yes| H[Launch SignInPage]
-
-    %% Login Process
-    H --> I[SignInPage - Display Login Form]
-    I --> J{{User Action}}
-    J -->|Click Login| K[Get Username/Password]
-    J -->|Click Register| L[Open RegistrationDialog Modal]
-
-    K --> M[(UserManager.validateLogin)]
-    M --> N{{User Exists?}}
-    N -->|No| O[/Display Invalid Credentials/]
-    O --> I
-    N -->|Yes| P[Compare PBKDF2 Hashed Passwords]
-    P --> Q{{Password Match?}}
-    Q -->|No| O
-    Q -->|Yes| R[Set Current User Session]
-
-    %% Registration Process
-    L --> S[RegistrationDialog - Get Details]
-    S --> T[Validate Input Data]
-    T --> U{{Valid Data?}}
-    U -->|No| V[/Display Validation Errors/]
-    V --> L
-    U -->|Yes| W[(UserManager - PBKDF2 Hash Password)]
-    W --> X[(UserManager.addUser)]
-    X --> Y{{User Created?}}
-    Y -->|No| Z[/Display Registration Failed/]
-    Z --> L
-    Y -->|Yes| AA[/Display Registration Successful/]
-    AA --> I
-
-    %% Main Interface
-    R --> BB[Launch HomePage Dashboard]
-    BB --> CC[(RecipeManager.getRecipesByUserId)]
-    CC --> DD[Display Recipe JTable]
-    DD --> EE[Generate Category Filter Buttons]
-    EE --> FF[Display Search Bar & Welcome]
-    FF --> GG[Show Action Buttons Row]
-    GG --> HH[Complete HomePage Layout]
-
-    %% User Actions in Main Interface
-    HH --> II{{User Action}}
-    II -->|Search/Filter| JJ[Filter Recipes by Name/Category]
-    JJ --> KK[Update Recipe JTable Display]
-    KK --> HH
-
-    II -->|Click Settings| LL[Launch SettingsPage]
-    LL --> MM[Display Settings Sections]
-    MM --> NN{{Settings Action}}
-    NN -->|Update Profile| OO[Change Email/Password Form]
-    OO --> PP[(UserManager.updateUser)]
-    PP --> QQ{{Update Successful?}}
-    QQ -->|Yes| RR[/Display Profile Updated/]
-    QQ -->|No| SS[/Display Update Failed/]
-    RR --> MM
-    SS --> MM
-
-    NN -->|Export Data| TT[(FileManager.exportRecipesToJSON)]
-    TT --> UU{{Export Successful?}}
-    UU -->|Yes| VV[/Display Export Complete/]
-    UU -->|No| WW[/Display Export Failed/]
-    VV --> MM
-    WW --> MM
-
-    NN -->|Import Data| XX[Select JSON Import File]
-    XX --> YY[(FileManager.importRecipesFromJSON)]
-    YY --> ZZ{{Import Successful?}}
-    ZZ -->|Yes| AAA[Refresh Recipe List]
-    ZZ -->|No| BBB[/Display Import Failed/]
-    AAA --> HH
-    BBB --> MM
-
-    NN -->|Create Backup| CCC[(FileManager.createBackup)]
-    CCC --> DDD{{Backup Successful?}}
-    DDD -->|Yes| EEE[/Display Backup Complete/]
-    DDD -->|No| FFF[/Display Backup Failed/]
-    EEE --> MM
-    FFF --> MM
-
-    NN -->|Delete Account| GGG[Confirm Account Deletion]
-    GGG --> HHH{{Confirm Delete?}}
-    HHH -->|No| MM
-    HHH -->|Yes| III[(UserManager.deleteUser - Cascade)]
-    III --> JJJ{{Delete Successful?}}
-    JJJ -->|Yes| KKK[/Account Deleted - Return to Login/]
-    JJJ -->|No| LLL[/Display Delete Failed/]
-    KKK --> I
-    LLL --> MM
-
-    NN -->|Back to Home| HH
-
-    %% Recipe Editor
-    FF -->|Add New Recipe| TT[Launch RecipeEditorPage]
-    FF -->|Edit Recipe| UU[Get Selected Recipe]
-    UU --> VV[(RecipeManager.getRecipeById)]
-    VV --> WW[Populate Editor Fields]
-    WW --> TT
-
-    TT --> XX[Display Recipe Editor]
-    XX --> YY{{Editor Action}}
-    YY -->|Add Ingredient| ZZ[Display Ingredient Form]
-    ZZ --> AAA[Get Ingredient Details]
-    AAA --> BBB[Add to Ingredient List]
-    BBB --> XX
-
-    YY -->|Remove Ingredient| CCC[Remove from Ingredient List]
-    CCC --> XX
-
-    YY -->|Start Timer| DDD[Get Timer Duration]
-    DDD --> EEE[(TimerManager.startTimer)]
-    EEE --> FFF[Display Timer Countdown]
-    FFF --> GGG{{Timer Action}}
-    GGG -->|Timer Complete| HHH[/Display Timer Alert/]
-    GGG -->|Stop Timer| III[(TimerManager.stopTimer)]
-    HHH --> XX
-    III --> XX
-
-    YY -->|Save Recipe| JJJ[Validate Recipe Data]
-    JJJ --> KKK{{Valid Recipe?}}
-    KKK -->|No| LLL[/Display Validation Errors/]
-    LLL --> XX
-    KKK -->|Yes| MMM[(RecipeManager.addRecipe)]
-    MMM --> NNN[Get New Recipe ID]
-    NNN --> OOO[Save Each Ingredient]
-    OOO --> PPP[(IngredientManager.addIngredient)]
-    PPP --> QQQ{{More Ingredients?}}
-    QQQ -->|Yes| OOO
-    QQQ -->|No| RRR{{Save Successful?}}
-    RRR -->|Yes| SSS[/Display Recipe Saved/]
-    RRR -->|No| TTT[/Display Save Failed/]
-    SSS --> EE
-    TTT --> XX
-
-    YY -->|Update Recipe| UUU[(RecipeManager.updateRecipe)]
-    UUU --> VVV[Update Ingredients]
-    VVV --> WWW[(IngredientManager.updateIngredient)]
-    WWW --> XXX{{Update Successful?}}
-    XXX -->|Yes| YYY[/Display Recipe Updated/]
-    XXX -->|No| ZZZ[/Display Update Failed/]
-    YYY --> EE
-    ZZZ --> XX
-
-    YY -->|Cancel/Back| EE
-
-    %% Delete Recipe
-    FF -->|Delete Recipe| AAAA[Confirm Delete Action]
-    AAAA --> BBBB{{Confirm Delete?}}
-    BBBB -->|No| EE
-    BBBB -->|Yes| CCCC[(RecipeManager.deleteRecipe)]
-    CCCC --> DDDD{{Delete Successful?}}
-    DDDD -->|Yes| EEEE[Refresh Recipe List]
-    DDDD -->|No| FFFF[/Display Delete Failed/]
-    EEEE --> EE
-    FFFF --> EE
-
-    %% Export/Import Recipes
-    FF -->|Export Recipes| GGGG[(FileManager.exportRecipesToJSON)]
-    GGGG --> HHHH{{Export Successful?}}
-    HHHH -->|Yes| IIII[/Display Export Complete/]
-    HHHH -->|No| JJJJ[/Display Export Failed/]
-    IIII --> EE
-    JJJJ --> EE
-
-    FF -->|Import Recipes| KKKK[Select Import File]
-    KKKK --> LLLL[(FileManager.importRecipesFromJSON)]
-    LLLL --> MMMM{{Import Successful?}}
-    MMMM -->|Yes| NNNN[Refresh Recipe List]
-    MMMM -->|No| OOOO[/Display Import Failed/]
-    NNNN --> EE
-    OOOO --> EE
-
-    %% Logout and Exit
-    FF -->|Logout| PPPP[Clear User Session]
-    PPPP --> H
-
-    FF -->|Exit Application| QQQQ[Save Any Pending Data]
-    QQQQ --> RRRR[(Close Database Connection)]
-    RRRR --> SSSS([End Application])
-
-    %% Styling
-    classDef startEnd fill:#e1f5fe,stroke:#0277bd,stroke-width:3px,color:#000
-    classDef process fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000
-    classDef decision fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000
-    classDef database fill:#e8f5e8,stroke:#388e3c,stroke-width:2px,color:#000
-    classDef display fill:#ffebee,stroke:#d32f2f,stroke-width:2px,color:#000
-    classDef manager fill:#e3f2fd,stroke:#1976d2,stroke-width:2px,color:#000
-    classDef ui fill:#fce4ec,stroke:#c2185b,stroke-width:2px,color:#000
-
-    class A,G,IIIII startEnd
-    class B,T,KK,DD,EE,FF,GG,JJ,AAAA,BBBB,XXX,YYY,ZZZ,MMMM,NNNN,DDDDD,GGGGG process
-    class E,J,N,Q,U,Y,II,NN,QQ,UU,ZZ,DDD,HHH,VVV,JJJJ,PPPP,QQQQ,WWWW,AAAAA,CCCCC decision
-    class C,D,M,W,X,CC,PP,TT,YY,CCC,OOO,YYY,DDDD,EEEE,LLLL,TTTT,VVVV,BBBBB,HHHHH database
-    class I,MM,QQQ,RRR,SSS,UUU,WWW,CCCC,EEEE,IIII,ZZZZ display
-    class F,O,V,Z,RR,SS,VV,WW,BBB,EEE,FFF,KKKK,RRRR,SSSS,XXXX,YYYY,EEEEE ui
-    class L,S,K,OO,XXX,FFFF,GGGG,HHHH,AAA,III manager
-
-    class AA,RR,SS,VV,WW,BBB,EEE,FFF,KKKK,RRRR,SSSS,XXXX,YYYY,EEEEE ui
+flowchart TD
+    A[Launch Application] --> B[Main initializes: Setup DB, UI, etc.]
+    B --> C[SignInPage: Login or Register]
+    C -->|Successful Login/Register| D[HomePage: View Recipes]
+    D --> E[Add Recipe] --> F[RecipeEditorPage: Enter Details, Ingredients, Timer]
+    F -->|Save| D
+    F -->|Cancel| D
+    D --> G[Edit Selected Recipe] --> F
+    D --> H[Delete Selected Recipe] --> D
+    D --> I[Settings] --> J[SettingsPage: Update Profile, Change Password, Export/Import Data, Backup, Deactivate/Delete Account]
+    J -->|Save Changes| D
+    J -->|Cancel| D
+    J -->|Delete Account| C
+    D --> K[Logout] --> C
+    F --> L[Start Cooking Timer]
+    L --> M[Timer Running: Pause/Resume/Stop]
+    M --> F
                 </pre>
             </div>
             <h2 id="class-design-and-oop-principles">2.3 Class Design and OOP Principles</h2>
             <h3>Class Design</h3>
             <div class="mermaid-container">
                 <pre class="mermaid">
-classDiagram
-    %% ===================
-    %% CORE MODEL CLASSES
-    %% ===================
+                classDiagram
     class User {
         -int userId
         -String username
@@ -785,26 +596,27 @@ classDiagram
         -String email
         -LocalDateTime createdAt
         +User()
-        +User(username, password, email)
-        +User(userId, username, password, email, createdAt)
-        +getUserId()
-        +getUsername()
-        +getPassword()
-        +getEmail()
-        +getCreatedAt()
-        +setUserId(userId)
-        +setUsername(username)
-        +setPassword(password)
-        +setEmail(email)
-        +setCreatedAt(createdAt)
-        +isPersisted()
-        +isValid()
-        +toSafeString()
-        +createSafeCopy()
+        +User(String username, String password, String email)
+        +User(int userId, String username, String password, String email, LocalDateTime createdAt)
+        +User(int userId, String username, String password, String email)
+        +getUserId() int
+        +getUsername() String
+        +getPassword() String
+        +getEmail() String
+        +getCreatedAt() LocalDateTime
+        +setUserId(int userId)
+        +setUsername(String username)
+        +setPassword(String password)
+        +setEmail(String email)
+        +setCreatedAt(LocalDateTime createdAt)
+        +isPersisted() boolean
+        +isValid() boolean
+        +toSafeString() String
+        +createSafeCopy() User
         +prepareForPersistence()
-        +toString()
-        +equals(obj)
-        +hashCode()
+        +toString() String
+        +equals(Object obj) boolean
+        +hashCode() int
     }
 
     class Recipe {
@@ -816,26 +628,26 @@ classDiagram
         -int cookTime
         -String instructions
         +Recipe()
-        +Recipe(recipeId, userId, name, category, prepTime, cookTime, instructions)
-        +Recipe(userId, name, category, prepTime, cookTime, instructions)
-        +getRecipeId()
-        +setRecipeId(recipeId)
-        +getUserId()
-        +setUserId(userId)
-        +getName()
-        +setName(name)
-        +getCategory()
-        +setCategory(category)
-        +getPrepTime()
-        +setPrepTime(prepTime)
-        +getCookTime()
-        +setCookTime(cookTime)
-        +getTotalTime()
-        +getInstructions()
-        +setInstructions(instructions)
-        +toString()
-        +equals(obj)
-        +hashCode()
+        +Recipe(int recipeId, int userId, String name, String category, int prepTime, int cookTime, String instructions)
+        +Recipe(int userId, String name, String category, int prepTime, int cookTime, String instructions)
+        +getRecipeId() int
+        +setRecipeId(int recipeId)
+        +getUserId() int
+        +setUserId(int userId)
+        +getName() String
+        +setName(String name)
+        +getCategory() String
+        +setCategory(String category)
+        +getPrepTime() int
+        +setPrepTime(int prepTime)
+        +getCookTime() int
+        +setCookTime(int cookTime)
+        +getTotalTime() int
+        +getInstructions() String
+        +setInstructions(String instructions)
+        +toString() String
+        +equals(Object obj) boolean
+        +hashCode() int
     }
 
     class Ingredient {
@@ -845,372 +657,268 @@ classDiagram
         -double quantity
         -String unit
         +Ingredient()
-        +Ingredient(ingredientId, recipeId, name, quantity, unit)
-        +Ingredient(recipeId, name, quantity, unit)
-        +getIngredientId()
-        +setIngredientId(ingredientId)
-        +getRecipeId()
-        +setRecipeId(recipeId)
-        +getName()
-        +setName(name)
-        +getQuantity()
-        +setQuantity(quantity)
-        +getUnit()
-        +setUnit(unit)
-        +getFormattedQuantity()
-        +toString()
-        +equals(obj)
-        +hashCode()
+        +Ingredient(int ingredientId, int recipeId, String name, double quantity, String unit)
+        +Ingredient(int recipeId, String name, double quantity, String unit)
+        +getIngredientId() int
+        +setIngredientId(int ingredientId)
+        +getRecipeId() int
+        +setRecipeId(int recipeId)
+        +getName() String
+        +setName(String name)
+        +getQuantity() double
+        +setQuantity(double quantity)
+        +getUnit() String
+        +setUnit(String unit)
+        +getFormattedQuantity() String
+        +toString() String
+        +equals(Object obj) boolean
+        +hashCode() int
     }
 
-    %% ===================
-    %% DATABASE LAYER
-    %% ===================
     class DatabaseConnector {
-        -DatabaseConnector instance$
-        -Object lock$
-        -String DB_HOST$
-        -String DB_PORT$
-        -String DB_DATABASE_NAME$
-        -String DB_USER$
-        -String DB_PASSWORD$
-        -String DB_URL$
+        <<singleton>>
+        -DatabaseConnector instance$ static volatile
+        -Object lock$ static final
+        -String DB_HOST$ static final
+        -String DB_PORT$ static final
+        -String DB_DATABASE_NAME$ static final
+        -String DB_USER$ static final
+        -String DB_PASSWORD$ static final
+        -String DB_URL$ static final
         -Connection connection
         -AtomicBoolean isInitialized
-        -Logger logger$
-        -String CREATE_USERS_TABLE$
-        -String CREATE_RECIPES_TABLE$
-        -String CREATE_INGREDIENTS_TABLE$
-        -DatabaseConnector()
-        +getInstance()$
-        -initializeLogger()
-        +connect()
-        +executeUpdate(sql)
-        +executeUpdate(sql, parameters)
-        +executeQuery(sql)
-        +executeQuery(sql, parameters)
-        +indexExists(tableName, indexName)
-        +createIndexIfNotExists(sql, tableName, indexName)
+        -Logger logger$ static final
+        -String CREATE_USERS_TABLE$ static final
+        -String CREATE_RECIPES_TABLE$ static final
+        -String CREATE_INGREDIENTS_TABLE$ static final
+        +DatabaseConnector()
+        +getInstance() DatabaseConnector
+        +initializeLogger()
+        +connect() Connection
+        +executeUpdate(String sql) int
+        +executeUpdate(String sql, Object... parameters) int
+        +executeQuery(String sql) ResultSet
+        +executeQuery(String sql, Object... parameters) ResultSet
+        +indexExists(String tableName, String indexName) boolean
+        +createIndexIfNotExists(String sql, String tableName, String indexName)
         +initializeTables()
-        +getConnection()
-        -setParameters(pstmt, parameters)
-        -validateSqlStatement(sql)
-        +testConnection()
-        +getDatabaseMetadata()
-        +getServerInfo()
+        +getConnection() Connection
+        +setParameters(PreparedStatement pstmt, Object... parameters)
+        +validateSqlStatement(String sql)
+        +testConnection() boolean
+        +getDatabaseMetadata() DatabaseMetaData
+        +getServerInfo() String
         +closeConnection()
-        +executeTransaction(operations)
+        +executeTransaction(String... operations) boolean
     }
 
-    %% ===================
-    %% MANAGER CLASSES
-    %% ===================
     class UserManager {
-        -DatabaseConnector dbConnector
-        -Logger logger$
-        -int SALT_LENGTH$
-        -int HASH_LENGTH$
-        -int ITERATIONS$
-        -String ALGORITHM$
-        -Pattern EMAIL_PATTERN$
-        -Pattern USERNAME_PATTERN$
-        -int MIN_PASSWORD_LENGTH$
-        -int MAX_PASSWORD_LENGTH$
-        -String INSERT_USER$
-        -String SELECT_USER_BY_ID$
-        -String SELECT_USER_BY_USERNAME$
-        -String UPDATE_USER$
-        -String DELETE_USER$
-        -String CHECK_USERNAME_EXISTS$
-        -String CHECK_EMAIL_EXISTS$
+        -DatabaseConnector dbConnector final
+        -Logger logger$ static final
+        -int SALT_LENGTH$ static final
+        -int HASH_LENGTH$ static final
+        -int ITERATIONS$ static final
+        -String ALGORITHM$ static final
+        -Pattern EMAIL_PATTERN$ static final
+        -Pattern USERNAME_PATTERN$ static final
+        -int MIN_PASSWORD_LENGTH$ static final
+        -int MAX_PASSWORD_LENGTH$ static final
+        -String INSERT_USER$ static final
+        -String SELECT_USER_BY_ID$ static final
+        -String SELECT_USER_BY_USERNAME$ static final
+        -String UPDATE_USER$ static final
+        -String DELETE_USER$ static final
+        -String CHECK_USERNAME_EXISTS$ static final
+        -String CHECK_EMAIL_EXISTS$ static final
         +UserManager()
-        +addUser(user)
-        +getUserById(id)
-        +getUserByUsername(username)
-        +updateUser(user)
-        +deleteUser(id)
-        -encryptPassword(password)
-        +validateLogin(username, password)
-        -verifyPassword(password, storedPassword)
-        -createUserFromResultSet(rs)
-        -validateUserInput(user, isNewUser)
-        -isValidUsername(username)
-        -isValidEmail(email)
-        -isValidPassword(password)
-        -usernameExists(username, excludeUserId)
-        -emailExists(email, excludeUserId)
+        +addUser(User user) UserOperationResult
+        +getUserById(int id) UserOperationResult
+        +getUserByUsername(String username) UserOperationResult
+        +updateUser(User user) UserOperationResult
+        +deleteUser(int id) UserOperationResult
+        +encryptPassword(String password) String
+        +validateLogin(String username, String password) UserOperationResult
+        +verifyPassword(String password, String storedPassword) boolean
+        +createUserFromResultSet(ResultSet rs) User
+        +validateUserInput(User user, boolean isNewUser) UserOperationResult
+        +isValidUsername(String username) boolean
+        +isValidEmail(String email) boolean
+        +isValidPassword(String password) boolean
+        +usernameExists(String username, int excludeUserId) boolean
+        +emailExists(String email, int excludeUserId) boolean
     }
 
     class UserOperationResult {
-        -boolean success
-        -String message
-        -User user
-        +UserOperationResult(success, message)
-        +UserOperationResult(success, message, user)
-        +isSuccess()
-        +getMessage()
-        +getUser()
-        +toString()
+        -boolean success final
+        -String message final
+        -User user final
+        +UserOperationResult(boolean success, String message)
+        +UserOperationResult(boolean success, String message, User user)
+        +isSuccess() boolean
+        +getMessage() String
+        +getUser() User
+        +toString() String
     }
 
     class RecipeManager {
-        -Logger logger$
+        -Logger logger$ static final
         -DatabaseConnector dbConnector
-        -String INSERT_RECIPE$
-        -String SELECT_RECIPE_BY_ID$
-        -String SELECT_ALL_RECIPES$
-        -String SELECT_RECIPES_BY_USER$
-        -String SELECT_RECIPES_BY_CATEGORY$
-        -String UPDATE_RECIPE$
-        -String DELETE_RECIPE$
-        -String DELETE_INGREDIENTS_BY_RECIPE$
-        -String SEARCH_RECIPES$
-        -String CHECK_RECIPE_EXISTS$
+        -String INSERT_RECIPE$ static final
+        -String SELECT_RECIPE_BY_ID$ static final
+        -String SELECT_ALL_RECIPES$ static final
+        -String SELECT_RECIPES_BY_USER$ static final
+        -String SELECT_RECIPES_BY_CATEGORY$ static final
+        -String UPDATE_RECIPE$ static final
+        -String DELETE_RECIPE$ static final
+        -String DELETE_INGREDIENTS_BY_RECIPE$ static final
+        -String SEARCH_RECIPES$ static final
+        -String CHECK_RECIPE_EXISTS$ static final
         +RecipeManager()
-        +RecipeManager(dbConnector)
-        +addRecipe(recipe)
-        +getRecipeById(id)
-        +getAllRecipes()
-        +getRecipesByUserId(userId)
-        +getRecipesByCategory(category)
-        +updateRecipe(recipe)
-        +deleteRecipe(id)
-        +searchRecipes(searchTerm)
-        +recipeExists(recipeId)
-        -mapResultSetToRecipe(rs)
-        -validateRecipe(recipe)
-        -validateId(id, fieldName)
-        -validateString(value, fieldName)
+        +RecipeManager(DatabaseConnector dbConnector)
+        +addRecipe(Recipe recipe) boolean
+        +getRecipeById(int id) Recipe
+        +getAllRecipes() List~Recipe~
+        +getRecipesByUserId(int userId) List~Recipe~
+        +getRecipesByCategory(String category) List~Recipe~
+        +updateRecipe(Recipe recipe) boolean
+        +deleteRecipe(int id) boolean
+        +searchRecipes(String searchTerm) List~Recipe~
+        +recipeExists(int recipeId) boolean
+        +mapResultSetToRecipe(ResultSet rs) Recipe
+        +validateRecipe(Recipe recipe) boolean
+        +validateId(int id, String fieldName)
+        +validateString(String value, String fieldName)
     }
 
     class IngredientManager {
-        -Logger logger$
+        -Logger logger$ static final
         -DatabaseConnector dbConnector
-        -String INSERT_INGREDIENT$
-        -String SELECT_INGREDIENTS_BY_RECIPE$
-        -String SELECT_INGREDIENT_BY_ID$
-        -String UPDATE_INGREDIENT$
-        -String DELETE_INGREDIENT$
-        -String DELETE_INGREDIENTS_BY_RECIPE$
-        -String CHECK_RECIPE_EXISTS$
-        -String CHECK_INGREDIENT_EXISTS$
-        -String COUNT_INGREDIENTS_BY_RECIPE$
+        -String INSERT_INGREDIENT$ static final
+        -String SELECT_INGREDIENTS_BY_RECIPE$ static final
+        -String SELECT_INGREDIENT_BY_ID$ static final
+        -String UPDATE_INGREDIENT$ static final
+        -String DELETE_INGREDIENT$ static final
+        -String DELETE_INGREDIENTS_BY_RECIPE$ static final
+        -String CHECK_RECIPE_EXISTS$ static final
+        -String CHECK_INGREDIENT_EXISTS$ static final
+        -String COUNT_INGREDIENTS_BY_RECIPE$ static final
         +IngredientManager()
-        +IngredientManager(dbConnector)
-        +addIngredient(ingredient)
-        +getIngredientsByRecipe(recipeId)
-        +getIngredientById(ingredientId)
-        +updateIngredient(ingredient)
-        +deleteIngredient(id)
-        +deleteIngredientsByRecipe(recipeId)
-        +addIngredientsToRecipe(ingredients)
-        +getIngredientCountByRecipe(recipeId)
-        -recipeExists(recipeId)
-        -ingredientExists(ingredientId)
-        -mapResultSetToIngredient(rs)
-        -validateIngredient(ingredient)
-        -validateId(id, fieldName)
+        +IngredientManager(DatabaseConnector dbConnector)
+        +addIngredient(Ingredient ingredient) boolean
+        +getIngredientsByRecipe(int recipeId) List~Ingredient~
+        +getIngredientById(int ingredientId) Ingredient
+        +updateIngredient(Ingredient ingredient) boolean
+        +deleteIngredient(int id) boolean
+        +deleteIngredientsByRecipe(int recipeId) int
+        +addIngredientsToRecipe(List~Ingredient~ ingredients) boolean
+        +getIngredientCountByRecipe(int recipeId) int
+        +recipeExists(int recipeId) boolean
+        +ingredientExists(int ingredientId) boolean
+        +mapResultSetToIngredient(ResultSet rs) Ingredient
+        +validateIngredient(Ingredient ingredient) boolean
+        +validateId(int id, String fieldName)
     }
 
-    %% ===================
-    %% FILE MANAGEMENT
-    %% ===================
     class FileManager {
-        -Logger logger$
-        -Gson gson
-        -RecipeManager recipeManager
-        -IngredientManager ingredientManager
-        -String[] EXPECTED_RECIPE_FIELDS$
-        -String[] EXPECTED_INGREDIENT_FIELDS$
-        +FileManager(recipeManager, ingredientManager)
+        -Logger logger$ static final
+        -Gson gson final
+        -RecipeManager recipeManager final
+        -IngredientManager ingredientManager final
+        -String[] EXPECTED_RECIPE_FIELDS$ static final
+        -String[] EXPECTED_INGREDIENT_FIELDS$ static final
+        +FileManager(RecipeManager recipeManager, IngredientManager ingredientManager)
         +FileManager()
-        +exportRecipesToJSON(recipes, filePath)
-        +exportRecipesToJSON(recipes, filePath, progressCallback)
-        +importRecipesFromJSON(filePath)
-        +importRecipesFromJSON(filePath, progressCallback)
-        +exportUserRecipesToJSON(userId, filePath)
-        +exportUserRecipesToJSON(userId, filePath, progressCallback)
-        +validateJSONFile(filePath)
-        +getExportStatistics(filePath)
-        -importSingleRecipe(recipeData)
-        -parseAndValidateJSON(jsonContent)
-        -validateRecipeStructure(recipeData)
-        -readFileContent(reader)
-        -validateRecipeList(recipes, paramName)
-        -validateFilePath(filePath, paramName)
+        +exportRecipesToJSON(List~Recipe~ recipes, String filePath) boolean
+        +exportRecipesToJSON(List~Recipe~ recipes, String filePath, ProgressCallback progressCallback) boolean
+        +importRecipesFromJSON(String filePath) List~Recipe~
+        +importRecipesFromJSON(String filePath, ProgressCallback progressCallback) List~Recipe~
+        +exportUserRecipesToJSON(int userId, String filePath) boolean
+        +exportUserRecipesToJSON(int userId, String filePath, ProgressCallback progressCallback) boolean
+        +validateJSONFile(String filePath) boolean
+        +getExportStatistics(String filePath) ExportStatistics
+        +importSingleRecipe(RecipeExportData recipeData) Recipe
+        +parseAndValidateJSON(String jsonContent) ExportContainer
+        +validateRecipeStructure(RecipeExportData recipeData)
+        +readFileContent(InputStreamReader reader) String
+        +validateRecipeList(List~Recipe~ recipes, String paramName)
+        +validateFilePath(String filePath, String paramName)
     }
 
-    %% ===================
-    %% TIMER SYSTEM
-    %% ===================
+    class ProgressCallback {
+        <<interface>>
+        +onProgress(int current, int total, String message)
+    }
+
+    class RecipeExportData {
+        -Recipe recipe
+        -List~Ingredient~ ingredients
+        -String exportTimestamp
+        +RecipeExportData()
+        +RecipeExportData(Recipe recipe, List~Ingredient~ ingredients)
+        +getRecipe() Recipe
+        +setRecipe(Recipe recipe)
+        +getIngredients() List~Ingredient~
+        +setIngredients(List~Ingredient~ ingredients)
+        +getExportTimestamp() String
+        +setExportTimestamp(String exportTimestamp)
+    }
+
+    class ExportContainer {
+        -String exportVersion
+        -String exportTimestamp
+        -int totalRecipes
+        -List~RecipeExportData~ recipes
+        +ExportContainer()
+        +getExportVersion() String
+        +setExportVersion(String exportVersion)
+        +getExportTimestamp() String
+        +setExportTimestamp(String exportTimestamp)
+        +getTotalRecipes() int
+        +setTotalRecipes(int totalRecipes)
+        +getRecipes() List~RecipeExportData~
+        +setRecipes(List~RecipeExportData~ recipes)
+    }
+
+    class ExportStatistics {
+        -int totalRecipes final
+        -String exportTimestamp final
+        -String exportVersion final
+        -String filePath final
+        +ExportStatistics(int totalRecipes, String exportTimestamp, String exportVersion, String filePath)
+        +getTotalRecipes() int
+        +getExportTimestamp() String
+        +getExportVersion() String
+        +getFilePath() String
+        +toString() String
+    }
+
     class TimerManager {
-        -Logger logger$
-        -AtomicInteger timerIdGenerator$
-        -Map activeTimers
+        -Logger logger$ static final
+        -AtomicInteger timerIdGenerator$ static final
+        -Map~Integer, CookingTimer~ activeTimers final
         -Integer defaultTimerId
         +TimerManager()
-        +startTimer(seconds)
-        +startTimer(seconds, name, callback)
-        +stopTimer()
-        +stopTimer(timerId)
-        +pauseTimer()
-        +pauseTimer(timerId)
-        +resumeTimer()
-        +resumeTimer(timerId)
-        +getRemainingTime()
-        +getRemainingTime(timerId)
-        +isRunning()
-        +isRunning(timerId)
-        +getTimerState(timerId)
-        +getAllTimers()
-        +getActiveTimerCount()
-        +stopAllTimers()
-        +formatTime(seconds)
-        -findNextDefaultTimer()
-        -validateSeconds(seconds)
+        +startTimer(int seconds) boolean
+        +startTimer(int seconds, String name, TimerCallback callback) int
+        +stopTimer() boolean
+        +stopTimer(int timerId) boolean
+        +pauseTimer() boolean
+        +pauseTimer(int timerId) boolean
+        +resumeTimer() boolean
+        +resumeTimer(int timerId) boolean
+        +getRemainingTime() int
+        +getRemainingTime(int timerId) int
+        +isRunning() boolean
+        +isRunning(int timerId) boolean
+        +getTimerState(int timerId) TimerState
+        +getAllTimers() List~TimerInfo~
+        +getActiveTimerCount() int
+        +stopAllTimers() int
+        +formatTime(int seconds) String
+        +findNextDefaultTimer() Integer
+        +validateSeconds(int seconds)
     }
 
-    class CookingTimer {
-        -int timerId
-        -String name
-        -int totalSeconds
-        -int remainingSeconds
-        -TimerState state
-        -Timer javaTimer
-        -TimerTask currentTask
-        -TimerCallback callback
-        -Object stateLock
-        +CookingTimer(timerId, name, totalSeconds, callback)
-        +start()
-        +pause()
-        +stop()
-        -tick()
-        -completeTimer()
-        -handleError(errorMessage)
-        +getTimerId()
-        +getName()
-        +getTotalSeconds()
-        +getRemainingSeconds()
-        +getState()
-        +isRunning()
-        +isPaused()
-        +isCompleted()
-        +isStopped()
-    }
-
-    %% ===================
-    %% UI LAYER
-    %% ===================
-    class Main {
-        -String APP_TITLE$
-        -String APP_VERSION$
-        -int DEFAULT_WIDTH$
-        -int DEFAULT_HEIGHT$
-        -int MIN_WIDTH$
-        -int MIN_HEIGHT$
-        -Logger logger$
-        -JFrame mainFrame
-        -DatabaseConnector databaseConnector
-        -boolean isShuttingDown
-        +main(args)$
-        -initializeApplication()
-        -setupLogging()
-        -setupSystemProperties()
-        -setLookAndFeel()
-        -setupUIDefaults()
-        -initializeDatabase()
-        -setupGlobalExceptionHandling()
-        -createAndShowMainWindow()
-        -setupMainFrameProperties()
-        -setupWindowListeners()
-        -loadSignInPage()
-        -centerWindow()
-        -handleApplicationShutdown()
-        -performCleanup()
-        +showErrorDialog(title, message)
-        +getMainFrame()
-        +getDatabaseConnector()
-        +isShuttingDown()
-    }
-
-    class SignInPage {
-        -JTextField txtUsername
-        -JPasswordField txtPassword
-        -JButton btnLogin
-        -JButton btnRegister
-        -JButton btnTogglePassword
-        -JLabel lblError
-        -JProgressBar loadingBar
-        -UserManager userManager
-        -boolean passwordVisible
-        -SignInPageListener listener
-        +SignInPage()
-        +SignInPage(userManager)
-        +setSignInPageListener(listener)
-        -initializeComponents()
-        -setupLayout()
-        -setupEventListeners()
-        -handleLogin()
-        -handleRegister()
-        -validateInput(username, password)
-        -togglePasswordVisibility()
-        -setLoading(loading)
-        -showError(message)
-        -showSuccess(message)
-        -clearErrorMessage()
-        -openHomePage(userId)
-        -clearFields()
-        +focusUsernameField()
-        +setEnabled(enabled)
-    }
-
-    class HomePage {
-        -JTable recipeTable
-        -DefaultTableModel tableModel
-        -TableRowSorter tableSorter
-        -JPanel categoryPanel
-        -JTextField searchField
-        -JButton btnAddRecipe
-        -JButton btnEditRecipe
-        -JButton btnDeleteRecipe
-        -JButton btnSettings
-        -JButton btnLogout
-        -JLabel lblWelcome
-        -JLabel lblRecipeCount
-        -RecipeManager recipeManager
-        -int currentUserId
-        -List allRecipes
-        -List allCategories
-        -String selectedCategory
-        +HomePage(userId)
-        -initializeComponents()
-        -createStyledButton(text, backgroundColor)
-        -setupLayout()
-        -setupEventListeners()
-        -loadData()
-        -loadRecipes()
-        -loadCategories()
-        -updateRecipeTable()
-        -updateCategoryButtons()
-        -createCategoryButton(category)
-        -filterRecipesByCategory(category)
-        -getFilteredRecipes()
-        -filterTable()
-        -updateRecipeCount()
-        -openRecipeEditor()
-        -openRecipeEditor(recipe)
-        -editSelectedRecipe()
-        -deleteSelectedRecipe()
-        -openSettings()
-        -handleLogout()
-        +refreshData()
-        -showError(message)
-        -showSuccess(message)
-    }
-
-    %% ===================
-    %% ENUMS & INTERFACES
-    %% ===================
     class TimerState {
         <<enumeration>>
         RUNNING
@@ -1222,47 +930,73 @@ classDiagram
 
     class TimerCallback {
         <<interface>>
-        +onTick(timerId, remainingSeconds, totalSeconds)
-        +onTimerCompleted(timerId, name)
-        +onStateChanged(timerId, oldState, newState)
-        +onTimerError(timerId, error)
+        +onTick(int timerId, int remainingSeconds, int totalSeconds)
+        +onTimerCompleted(int timerId, String name)
+        +onStateChanged(int timerId, TimerState oldState, TimerState newState)
+        +onTimerError(int timerId, String error)
     }
 
-    class ProgressCallback {
-        <<interface>>
-        +onProgress(current, total, message)
+    class CookingTimer {
+        -int timerId final
+        -String name final
+        -int totalSeconds final
+        -int remainingSeconds
+        -TimerState state
+        -Timer javaTimer
+        -TimerTask currentTask
+        -TimerCallback callback final
+        -Object stateLock final
+        +CookingTimer(int timerId, String name, int totalSeconds, TimerCallback callback)
+        +start()
+        +pause()
+        +stop()
+        +tick()
+        +completeTimer()
+        +handleError(String errorMessage)
+        +getTimerId() int
+        +getName() String
+        +getTotalSeconds() int
+        +getRemainingSeconds() int
+        +getState() TimerState
+        +isRunning() boolean
+        +isPaused() boolean
+        +isCompleted() boolean
+        +isStopped() boolean
     }
 
-    class SignInPageListener {
-        <<interface>>
-        +onLoginSuccess(userId)
-        +onRegistrationRequested()
+    class TimerInfo {
+        -int id final
+        -String name final
+        -int totalSeconds final
+        -int remainingSeconds final
+        -TimerState state final
+        +TimerInfo(int id, String name, int totalSeconds, int remainingSeconds, TimerState state)
+        +getId() int
+        +getName() String
+        +getTotalSeconds() int
+        +getRemainingSeconds() int
+        +getState() TimerState
+        +toString() String
     }
 
-    %% ===================
-    %% RELATIONSHIPS
-    %% ===================
-    UserManager --> DatabaseConnector : uses
-    RecipeManager --> DatabaseConnector : uses
-    IngredientManager --> DatabaseConnector : uses
-    UserManager --> User : manages
-    RecipeManager --> Recipe : manages
-    IngredientManager --> Ingredient : manages
-    FileManager --> RecipeManager : uses
-    FileManager --> IngredientManager : uses
-    TimerManager --> CookingTimer : manages
-    CookingTimer --> TimerState : has
-    CookingTimer --> TimerCallback : uses
-    Main --> DatabaseConnector : initializes
-    Main --> SignInPage : displays
-    SignInPage --> UserManager : uses
-    SignInPage --> SignInPageListener : notifies
-    SignInPage --> HomePage : opens
-    HomePage --> RecipeManager : uses
-    UserManager --> UserOperationResult : returns
-    FileManager --> ProgressCallback : uses
-    TimerManager --> TimerCallback : uses
-    SignInPage --> SignInPageListener : uses
+    User "1" -- "0..*" Recipe : owns >
+    Recipe "1" -- "0..*" Ingredient : contains >
+    UserManager "1" --> "1" DatabaseConnector : uses
+    UserManager "1" *-- "1" UserOperationResult : returns
+    RecipeManager "1" --> "1" DatabaseConnector : uses
+    IngredientManager "1" --> "1" DatabaseConnector : uses
+    FileManager "1" --> "1" RecipeManager : uses
+    FileManager "1" --> "1" IngredientManager : uses
+    FileManager "1" *-- "1" ProgressCallback : uses
+    FileManager "1" *-- "1" RecipeExportData : uses
+    FileManager "1" *-- "1" ExportContainer : uses
+    FileManager "1" *-- "1" ExportStatistics : returns
+    TimerManager "1" *-- "1" TimerState : uses
+    TimerManager "1" *-- "1" TimerCallback : uses
+    TimerManager "1" o-- "0..*" CookingTimer : manages
+    TimerManager "1" *-- "1" TimerInfo : returns
+    CookingTimer "1" --> "1" TimerState : has
+    CookingTimer "1" --> "1" TimerCallback : notifies
                 </pre>
             </div>
             <h3>OOP Principles</h3>
