@@ -61,7 +61,7 @@
 │  └─────────────────────────────────┘│
 └─────────────────────────────────────┘
             </code></pre>
-            <iframe src="SignInView.html" width="100%" height="700px" title="SignInPageView"></iframe>
+            <!--<iframe src="SignInView.html" width="100%" height="700px" title="SignInPageView"></iframe>-->
             <p><strong>GUI Components:</strong></p>
             <ol>
                 <li><strong><code>JPanel</code> (mainPanel)</strong><ul>
@@ -248,7 +248,7 @@
                     <li><strong>Behavior:</strong> Automatic scrollbars when needed</li>
                 </ul></li>
             </ol>
-            <p><strong>action Buttons:</strong></p>
+            <p><strong>Action Buttons:</strong></p>
             <ol>
                     <li><strong><code>JButton</code> (addRecipeButton)</strong><ul>
                     <li><strong>Text:</strong> "Add Recipe"</li>
@@ -398,7 +398,7 @@
                     <li><strong>Function:</strong> Display validation errors (e.g., "Name is required")</li>
                 </ul></li>
             </ol>
-            <p><strong>Action Buttons:</strong></p>
+            <p><strong>Action Buttons:</strong></p><ul>
                 <li><strong><code>JButton</code> (btnSave):</strong> Validates inputs, saves recipe via RecipeManager and IngredientManager</li>
                 <li><strong><code>JButton</code> (btnCancel):</strong> Prompts for confirmation and closes without saving</li>
                 <li><strong><code>JButton</code> (btnAddIngredient):</strong> Opens Ingredient Dialog in create mode</li>
@@ -406,26 +406,27 @@
                 <li><strong><code>JButton</code> (btnRemoveIngredient):</strong> Removes selected ingredient with confirmation</li>
                 <li><strong><code>JButton</code> (btnStartTimer):</strong> Starts cooking timer via TimerManager</li>
                 <li><strong><code>JButton</code> (btnStopTimer):</strong> Stops or pauses active timer</li>
+                </ul>
             <h4>Ingredient Dialog (<code>IngredientDialog.java</code>)</h4>
             <p><strong>Modal Dialog Components:</strong></p>
             <ol>
-                <li><strong><code>JTextField</code>(txtName)</strong><ul>
-                    <li><strong><code>Function:</strong> Single-line text for ingredient name</li>
-                    <li><strong><code>Validation:</strong> Non-empty name required</li>
+                <li><strong><code>JTextField</code> (txtName)</strong><ul>
+                    <li><strong>Function:</strong> Single-line text for ingredient name</li>
+                    <li><strong>Validation:</strong> Non-empty name required</li>
                 </ul></li>
-                <li><strong><code>JSpinner</code>(spnQuantity)</strong><ul>
-                    <li><strong><code>DataType:</strong> Double (decimal support)</li>
-                    <li><strong><code>Range:</strong> Minimum 0, supports decimal values</li>
+                <li><strong><code>JSpinner</code> (spnQuantity)</strong><ul>
+                    <li><strong>DataType:</strong> Double (decimal support)</li>
+                    <li><strong>Range:</strong> Minimum 0, supports decimal values</li>
                 </ul></li>
-                <li><strong><code>JComboBox&lt;String&gt;</code>(cmbUnit)</strong><ul>
-                    <li><strong><code>Options:</strong> "g", "ml", "cup", "tbsp", "tsp", "oz", "lb"</li>
-                    <li><strong><code>Behaviour:</strong> Supports custom entry</li>
+                <li><strong><code>JComboBox&lt;String&gt;</code> (cmbUnit)</strong><ul>
+                    <li><strong>Options:</strong> "g", "ml", "cup", "tbsp", "tsp", "oz", "lb"</li>
+                    <li><strong>Behaviour:</strong> Supports custom entry</li>
                 </ul></li>
             </ol>
-            <p><strong>Action Elements:</strong></p>
+            <p><strong>Action Elements:</strong></p><ul>
                 <li><strong><code>JButton</code> (btnOK):</strong> Validates inputs, creates/updates Ingredient object</li>
                 <li><strong><code>JButton</code> (btnCancel):</strong> Closes dialog without changes</li>
-
+            </ul>
             <h4>Settings Page (<code>SettingsPage.java</code>)</h4>
             <p><strong>Layout Structure:</strong></p>
             <pre><code>
@@ -471,23 +472,23 @@
                     <li><strong>Function:</strong> Input field for email address update</li>
                     <li><strong>Validation:</strong> Email format validation</li>
                 </ul></li>
-                <li><strong>Password Fields</strong>
+                <li><strong>Password Fields</strong><ul>
                     <li><strong><code>JPasswordField</code> (txtCurrentPassword):</strong> Current password for verification</li>
                     <li><strong><code>JPasswordField</code> (txtNewPassword):</strong> New password input with strength validation</li>
                     <li><strong><code>JPasswordField</code> (txtConfirmPassword):</strong> Password confirmation field</li>
-                </li>
-                <li><strong>Visibility Toggle Buttons</strong>
+                </ul></li>
+                <li><strong>Visibility Toggle Buttons</strong><ul>
                     <li><strong><code>JButton</code> (btnToggleCurrentPassword):</strong> Toggle current password visibility</li>
                     <li><strong><code>JButton</code> (btnToggleNewPassword):</strong> Toggle new password visibility</li>
                     <li><strong><code>JButton</code> (btnToggleConfirmPassword):</strong> Toggle confirm password visibility</li>
-                </li>
-                <li><strong>Status Labels</strong>
+                </ul></li>
+                <li><strong>Status Labels</strong><ul>
                     <li><strong><code>JLabel</code> (lblLastBackup):</strong> Shows timestamp of last data backup</li>
                     <li><strong><code>JLabel</code> (lblErrorMessage):</strong> Display errors (e.g., "Invalid password")</li>
                     <li><strong><code>JLabel</code> (lblSuccessMessage):</strong> Display confirmations (e.g., "Profile updated")</li>
-                </li>
+                </ul></li>
             </ol>
-            <p><strong>Action Buttons:</strong></p>
+            <p><strong>Action Buttons:</strong></p><ul>
                 <li><strong><code>JButton</code> (btnSaveProfile):</strong> Updates email via UserManager</li>
                 <li><strong><code>JButton</code> (btnChangePassword):</strong> Validates and updates password</li>
                 <li><strong><code>JButton</code> (btnExportData):</strong> Exports user recipes to JSON via FileManager</li>
@@ -497,7 +498,7 @@
                 <li><strong><code>JButton</code> (btnDeleteAccount):</strong> Deletes account after multiple confirmations</li>
                 <li><strong><code>JButton</code> (btnSaveChanges):</strong> Saves all pending changes</li>
                 <li><strong><code>JButton</code> (btnCancel):</strong> Closes page without saving</li>
-            
+            </ul>
 
             <p><strong>Action Elements:</strong></p>
             <table>
@@ -1000,49 +1001,54 @@ flowchart TD
         </ul>
         <h4>2. Abstraction</h4>
         <ul>
-            <li><strong>DatabaseManager</strong>: Provides a high-level API that abstracts complex SQL operations from the UI layer</li>
-            <li><strong>ChatManager</strong>: Abstracts chat-related database operations into simple method calls</li>
+            <li><strong>DatabaseManager</strong>: Provides a high-level API that abstracts complex SQL operations from the business logic layer</li>
+            <li><strong>ChatManager</strong>: UserManager, RecipeManager, IngredientManager, FileManager, and TimerManager abstract complex operations into simple method calls</li>
             <li><strong>Data Model Classes</strong>: Abstract database entities into Java objects with clear interfaces</li>
         </ul>
         <h4>3. Inheritance</h4>
         <ul>
-            <li><strong>ResultSetTableModel</strong>: Extends <code>AbstractTableModel</code> to provide specialized table functionality for database results</li>
-            <li><strong>Enum Classes</strong>: All enumerations inherit from Java's <code>Enum</code> class providing type safety</li>
+            <li><strong>Java Standard Inheritance</strong>: All classes inherit from Object class providing basic functionality like <code>toString()</code>, <code>equals()</code>, and <code>hashCode()</code></li>
+            <li><strong>Enum Classes</strong>: <code>TimerState</code> enumeration inherits from Java's <code>Enum</code> class providing type safety</li>
         </ul>
         <h4>4. Polymorphism</h4>
         <ul>
-            <li><strong>Interface Implementation</strong>: <code>ResultSetTableModel</code> implements <code>TableModel</code> interface methods that can be called polymorphically</li>
-            <li><strong>Method Overriding</strong>: The <code>ResultSetTableModel</code> overrides abstract methods from <code>AbstractTableModel</code></li>
+            <li><strong>Interface Implementation</strong>: <code>ProgressCallback</code> and <code>TimerCallback</code> interfaces allow different implementations to be used polymorphically</li>
+            <li><strong>Method Overriding</strong>: Data model classes override <code>toString()</code>, <code>equals()</code>, and <code>hashCode()</code> methods from Object class</li>
         </ul>
         <h4>5. Singleton Pattern</h4>
         <ul>
-            <li><strong>DatabaseConnection</strong>: Ensures only one database connection exists throughout the application</li>
-            <li><strong>UserSession</strong>: Maintains a single session instance for the current user</li>
+            <li><strong>DatabaseConnector</strong>: Ensures only one database connection exists throughout the application using thread-safe singleton implementation</li>
         </ul>
         <h4>6. Composition and Aggregation</h4>
         <ul>
-            <li><strong>Strong Composition</strong>: <code>ChatMessage</code> cannot exist without <code>ChatSession</code></li>
+            <li><strong>Strong Composition:</strong><ul>
+                <li><code>UserOperationResult</code> is composed by <code>UserManager</code> (cannot exist without it)</li>
+                <li><code>ExportStatistics</code> is composed by <code>FileManager</code></li>
+                <li><code>TimerInfo</code> is composed by <code>TimerManager</code></li>
+            </li></ul>
             <li><strong>Aggregation</strong>: <code>HelpRequest</code> and <code>User</code> have a "created by" relationship where both can exist independently</li>
         </ul>
             <h4>Class Design Analysis</h4>
             <p><strong>Logical Separation</strong></p>
             <ul>
-            <li><strong>Data Access Layer</strong>: <code>DatabaseConnection</code>, <code>DatabaseManager</code>, <code>ChatManager</code></li>
-            <li><strong>Business Logic Layer</strong>: <code>UserSession</code>, data model classes</li>
-            <li><strong>Data Model Layer</strong>: POJOs representing database entities</li>
-            <li><strong>Utility Layer</strong>: <code>ResultSetTableModel</code> for specialized table operations</li>
+            <li><strong>Data Access Layer</strong>: <code>DatabaseConnection</code>, for database connectivity and SQL operations</li>
+            <li><strong>Business Logic Layer</strong>: Manager classes (<code>UserManager, RecipeManager, IngredientManager, FileManager, TimerManager</code>)</li>
+            <li><strong>Data Model Layer</strong>: POJOs representing entities (<code>User, Recipe, Ingredient, timer-related classes</code>)</li>
+            <li><strong>Utility Layer</strong>: Result and callback classes for specialized operations</li>
             </ul>
             <p><strong>Access Control</strong></p>
             <ul>
             <li><strong>Private Fields</strong>: All data members are private to enforce encapsulation</li>
             <li><strong>Public Methods</strong>: Interface methods are public for external access</li>
-            <li><strong>Protected Methods</strong>: Constructor methods in singleton classes are private to prevent external instantiation</li>
+            <li><strong>Protected Methods</strong>: The <code>password</code> field in <code>User</code> class is protected (indicated by # in UML)</li>
+            <li><strong>Static Fields</strong>: Constants and shared resources marked as <code>static final</code></li>
             </ul>
             <p><strong>Cohesion and Coupling</strong></p>
             <ul>
             <li><strong>High Cohesion</strong>: Each class has a single, well-defined responsibility</li>
             <li><strong>Loose Coupling</strong>: Classes interact through well-defined interfaces rather than direct field access</li>
             <li><strong>Dependency Management</strong>: Database-dependent classes use <code>DatabaseConnection</code> singleton to manage connections</li>
+            <li><strong>Interface Segregation</strong>: Callback interfaces (<code>ProgressCallback, TimerCallback</code>) provide focused, specific contracts</li>
             </ul>
             <h2 id="secondary-storage-design">2.4 Secondary Storage Design</h2>
 
@@ -1191,7 +1197,12 @@ name: "Classic Spaghetti Carbonara"
 category: "Dinner"
 prepTime: 15
 cookTime: 20
-instructions: "1. Boil water and cook spaghetti until al dente. 2. In a bowl, whisk eggs with parmesan cheese. 3. Cook pancetta until crispy. 4. Mix hot pasta with egg mixture and pancetta. 5. Season with black pepper and serve immediately."
+instructions: "
+    1. Boil water and cook spaghetti until al dente. 
+    2. In a bowl, whisk eggs with parmesan cheese. 
+    3. Cook pancetta until crispy. 
+    4. Mix hot pasta with egg mixture and pancetta. 
+    5. Season with black pepper and serve immediately."
 createdAt: "2024-01-16 09:15:30"
 updatedAt: "2024-01-16 09:15:30"
 
@@ -1201,7 +1212,13 @@ name: "Chocolate Chip Cookies"
 category: "Dessert"
 prepTime: 20
 cookTime: 12
-instructions: "1. Preheat oven to 375°F. 2. Cream butter and sugars. 3. Add eggs and vanilla. 4. Mix in flour, baking soda, and salt. 5. Fold in chocolate chips. 6. Drop dough on baking sheet. 7. Bake for 12 minutes until golden."
+instructions: "
+    1. Preheat oven to 375°F. 
+    2. Cream butter and sugars. 3. Add eggs and vanilla. 
+    4. Mix in flour, baking soda, and salt. 
+    5. Fold in chocolate chips. 
+    6. Drop dough on baking sheet. 
+    7. Bake for 12 minutes until golden."
 createdAt: "2024-01-18 16:45:22"
 updatedAt: "2024-01-19 10:30:15"</code></pre>
 
@@ -1425,7 +1442,8 @@ VALUES (?, ?, ?)
     cookTime INT DEFAULT NULL,
     instructions TEXT,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT 
+        CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
 );
 </code></pre>
@@ -1438,7 +1456,8 @@ VALUES (?, ?, ?)
 <li><code>RecipeManager.addRecipe(Recipe recipe)</code> is called with populated Recipe object</li>
 <li>Data validation occurs at model level through Recipe setters</li>
 <li><p>PreparedStatement executes:</p>
-<pre><code class="lang-sql">INSERT INTO recipes (userId, name, category, prepTime, cookTime, instructions) 
+<pre><code class="lang-sql">INSERT INTO recipes (userId, name, category, 
+prepTime, cookTime, instructions) 
 VALUES (?, ?, ?, ?, ?, ?)
 </code></pre>
 </li>
@@ -1486,7 +1505,8 @@ ORDER BY updatedAt DESC
     name VARCHAR(255) NOT NULL,
     quantity DECIMAL(10,2),
     unit VARCHAR(50),
-    FOREIGN KEY (recipeId) REFERENCES recipes(recipeId) ON DELETE CASCADE
+    FOREIGN KEY (recipeId) REFERENCES recipes(recipeId) 
+        ON DELETE CASCADE
 );
 </code></pre>
 
