@@ -398,7 +398,7 @@
                     <li><strong><code>Function:</strong> Display validation errors (e.g., "Name is required")</li>
                 </ul></li>
             </ol>
-                <p><strong>Action Buttons:</strong></p>
+            <p><strong>Action Buttons:</strong></p>
                 <li><strong><code>JButton</code> (btnSave):</strong> Validates inputs, saves recipe via RecipeManager and IngredientManager</li>
                 <li><strong><code>JButton</code> (btnCancel):</strong> Prompts for confirmation and closes without saving</li>
                 <li><strong><code>JButton</code> (btnAddIngredient):</strong> Opens Ingredient Dialog in create mode</li>
@@ -406,69 +406,25 @@
                 <li><strong><code>JButton</code> (btnRemoveIngredient):</strong> Removes selected ingredient with confirmation</li>
                 <li><strong><code>JButton</code> (btnStartTimer):</strong> Starts cooking timer via TimerManager</li>
                 <li><strong><code>JButton</code> (btnStopTimer):</strong> Stops or pauses active timer</li>
-
+            <h4>Ingredient Dialog (<code>IngredientDialog.java</code>)</h4>
+            <p><strong>Modal Dialog Components:</strong></p>
+            <ol>
+                <li><strong><code>JTextField</code>(txtName)</strong><ul>
+                    <li><strong><code>Function:</strong> Single-line text for ingredient name</li>
+                    <li><strong><code>Validation:</strong> Non-empty name required</li>
+                </ul></li>
+                <li><strong><code>JSpinner</code>(spnQuantity)</strong><ul>
+                    <li><strong><code>DataType:</strong> Double (decimal support)</li>
+                    <li><strong><code>Range:</strong> Minimum 0, supports decimal values</li>
+                </ul></li>
+                <li><strong><code>JComboBox&lt;String&gt;</code>(cmbUnit)</strong><ul>
+                    <li><strong><code>Options:</strong> "g", "ml", "cup", "tbsp", "tsp", "oz", "lb"</li>
+                    <li><strong><code>Behaviour:</strong> Supports custom entry</li>
+                </ul></li>
+            </ol>
             <p><strong>Action Elements:</strong></p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Element</th>
-                        <th>Input Device</th>
-                        <th>Action Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>recipeNameField</td>
-                        <td>Keyboard</td>
-                        <td>Text input with validation feedback</td>
-                    </tr>
-                    <tr>
-                        <td>categoryDropdown</td>
-                        <td>Mouse/Keyboard</td>
-                        <td>Category selection from predefined options</td>
-                    </tr>
-                    <tr>
-                        <td>prepTimeSpinner</td>
-                        <td>Mouse/Keyboard</td>
-                        <td>Numeric input with increment/decrement</td>
-                    </tr>
-                    <tr>
-                        <td>cookTimeSpinner</td>
-                        <td>Mouse/Keyboard</td>
-                        <td>Numeric input with increment/decrement</td>
-                    </tr>
-                    <tr>
-                        <td>instructionsArea</td>
-                        <td>Keyboard</td>
-                        <td>Multi-line text input with scrolling</td>
-                    </tr>
-                    <tr>
-                        <td>addIngredientButton</td>
-                        <td>Mouse/Keyboard</td>
-                        <td>Open ingredient creation dialog</td>
-                    </tr>
-                    <tr>
-                        <td>ingredientsTable</td>
-                        <td>Mouse</td>
-                        <td>Edit/delete ingredients inline</td>
-                    </tr>
-                    <tr>
-                        <td>timer buttons</td>
-                        <td>Mouse/Keyboard</td>
-                        <td>Control cooking timer functionality</td>
-                    </tr>
-                    <tr>
-                        <td>saveButton</td>
-                        <td>Mouse/Keyboard</td>
-                        <td>Validate and save recipe data</td>
-                    </tr>
-                    <tr>
-                        <td>cancelButton</td>
-                        <td>Mouse/Keyboard</td>
-                        <td>Exit without saving changes</td>
-                    </tr>
-                </tbody>
-            </table>
+                <li><strong><code>JButton</code> (btnOK):</strong> Validates inputs, creates/updates Ingredient object</li>
+                <li><strong><code>JButton</code> (btnCancel):</strong> Closes dialog without changes</li>
 
             <h4>Settings Page (<code>SettingsPage.java</code>)</h4>
             <p><strong>Layout Structure:</strong></p>
@@ -478,20 +434,19 @@
 ├─────────────────────────────────────────────────┤
 │ ┌─────────────────────────────────────────────┐ │
 │ │              USER PROFILE                   │ │
-│ │ Current Email: [john@example.com]           │ │
-│ │ New Email: [_________________________]      │ │
-│ │ Current Password: [__________________]      │ │
-│ │ New Password: [______________________]      │ │
-│ │ Confirm Password: [__________________]      │ │
-│ │         [Update Profile]                    │ │
+│ │ Username: [john_doe] (read-only)            │ │
+│ │ Email: [_________________________]          │ │
+│ │ Current Password: [__________________] 👁   │ │
+│ │ New Password: [______________________] 👁   │ │
+│ │ Confirm Password: [__________________] 👁   │ │
+│ │ [Save Profile] [Change Password]            │ │
 │ └─────────────────────────────────────────────┘ │
 │ ┌─────────────────────────────────────────────┐ │
 │ │            DATA MANAGEMENT                  │ │
-│ │                                             │ │
-│ │         [Export Recipes]                    │ │
-│ │         [Import Recipes]                    │ │
-│ │         [Create Backup]                     │ │
-│ │                                             │ │
+│ │ Last Backup: [2023-12-01 14:30:00]          │ │
+│ │         [Export Data]                       │ │
+│ │         [Import Data]                       │ │
+│ │         [Backup Data]                       │ │
 │ └─────────────────────────────────────────────┘ │
 │ ┌─────────────────────────────────────────────┐ │
 │ │          ACCOUNT MANAGEMENT                 │ │
@@ -500,58 +455,49 @@
 │ │         [Delete Account]                    │ │
 │ │                                             │ │
 │ └─────────────────────────────────────────────┘ │
-│           [Back to Home] [Logout]               │
+│ Error: [Error message display]                  │
+│ Success: [Success message display]              │
+│ [Save Changes] [Cancel]                         │
 └─────────────────────────────────────────────────┘
             </code></pre>
             <iframe src="SettingsView.html" width="100%" height="700px" title="SettingsView"></iframe>
             <p><strong>GUI Components:</strong></p>
             <ol>
-                <li><strong><code>JLabel</code> (currentEmailLabel)</strong><ul>
-                    <li><strong>Function:</strong> Display current user email address</li>
-                    <li><strong>Data Source:</strong> Retrieved from user session</li>
+                <li><strong><code>JTextField</code> (txtUsername)</strong><ul>
+                    <li><strong>Function:</strong> Display current username (read-only)</li>
+                    <li><strong>Behavior:</strong> Non-editable, shows current user</li>
                 </ul></li>
-                <li><strong><code>JTextField</code> (newEmailField)</strong><ul>
+                <li><strong><code>JTextField</code> (txtEmail)</strong><ul>
                     <li><strong>Function:</strong> Input field for email address update</li>
                     <li><strong>Validation:</strong> Email format validation</li>
                 </ul></li>
-                <li><strong><code>JPasswordField</code> (currentPasswordField)</strong><ul>
-                    <li><strong>Function:</strong> Current password for verification</li>
-                    <li><strong>Security:</strong> Required for profile changes</li>
-                </ul></li>
-                <li><strong><code>JPasswordField</code> (newPasswordField)</strong><ul>
-                    <li><strong>Function:</strong> New password input</li>
-                    <li><strong>Validation:</strong> Password strength requirements</li>
-                </ul></li>
-                <li><strong><code>JPasswordField</code> (confirmPasswordField)</strong><ul>
-                    <li><strong>Function:</strong> Password confirmation</li>
-                    <li><strong>Validation:</strong> Must match new password</li>
-                </ul></li>
-                <li><strong><code>JButton</code> (updateProfileButton)</strong><ul>
-                    <li><strong>Text:</strong> "Update Profile"</li>
-                    <li><strong>Function:</strong> Save profile changes to database</li>
-                </ul></li>
-                <li><strong><code>JButton</code> (exportButton)</strong><ul>
-                    <li><strong>Text:</strong> "Export Recipes"</li>
-                    <li><strong>Function:</strong> Export user recipes to JSON file</li>
-                </ul></li>
-                <li><strong><code>JButton</code> (importButton)</strong><ul>
-                    <li><strong>Text:</strong> "Import Recipes"</li>
-                    <li><strong>Function:</strong> Import recipes from JSON file</li>
-                </ul></li>
-                <li><strong><code>JButton</code> (backupButton)</strong><ul>
-                    <li><strong>Text:</strong> "Create Backup"</li>
-                    <li><strong>Function:</strong> Create complete data backup</li>
-                </ul></li>
-                <li><strong><code>JButton</code> (deactivateButton)</strong><ul>
-                    <li><strong>Text:</strong> "Deactivate Account"</li>
-                    <li><strong>Function:</strong> Temporary account deactivation</li>
-                </ul></li>
-                <li><strong><code>JButton</code> (deleteAccountButton)</strong><ul>
-                    <li><strong>Text:</strong> "Delete Account"</li>
-                    <li><strong>Function:</strong> Permanent account and data deletion</li>
-                    <li><strong>Safety:</strong> Multiple confirmation dialogs</li>
-                </ul></li>
+                <li><strong>Password Fields</strong>
+                    <li><strong><code>JPasswordField</code> (txtCurrentPassword):</strong> Current password for verification</li>
+                    <li><strong><code>JPasswordField</code> (txtNewPassword):</strong> New password input with strength validation</li>
+                    <li><strong><code>JPasswordField</code> (txtConfirmPassword):</strong> Password confirmation field</li>
+                </li>
+                <li><strong>Visibility Toggle Buttons</strong>
+                    <li><strong><code>JButton</code> (btnToggleCurrentPassword):</strong> Toggle current password visibility</li>
+                    <li><strong><code>JButton</code> (btnToggleNewPassword):</strong> Toggle new password visibility</li>
+                    <li><strong><code>JButton</code> (btnToggleConfirmPassword):</strong> Toggle confirm password visibility</li>
+                </li>
+                <li><strong>Status Labels</strong>
+                    <li><strong><code>JLabel</code> (lblLastBackup):</strong> Shows timestamp of last data backup</li>
+                    <li><strong><code>JLabel</code> (lblErrorMessage):</strong> Display errors (e.g., "Invalid password")</li>
+                    <li><strong><code>JLabel</code> (lblSuccessMessage):</strong> Display confirmations (e.g., "Profile updated")</li>
+                </li>
             </ol>
+            <p><strong>Action Buttons:</strong></p>
+                <li><strong><code>JButton</code> (btnSaveProfile):</strong> Updates email via UserManager</li>
+                <li><strong><code>JButton</code> (btnChangePassword):</strong> Validates and updates password</li>
+                <li><strong><code>JButton</code> (btnExportData):</strong> Exports user recipes to JSON via FileManager</li>
+                <li><strong><code>JButton</code> (btnImportData):</strong> Imports recipes from JSON with validation</li>
+                <li><strong><code>JButton</code> (btnBackupData):</strong> Creates data backup and updates timestamp</li>
+                <li><strong><code>JButton</code> (btnDeactivateAccount):</strong> Deactivates account after confirmation</li>
+                <li><strong><code>JButton</code> (btnDeleteAccount):</strong> Deletes account after multiple confirmations</li>
+                <li><strong><code>JButton</code> (btnSaveChanges):</strong> Saves all pending changes</li>
+                <li><strong><code>JButton</code> (btnCancel):</strong> Closes page without saving</li>
+            
 
             <p><strong>Action Elements:</strong></p>
             <table>
@@ -569,14 +515,14 @@
                         <td>Text input with real-time validation</td>
                     </tr>
                     <tr>
-                        <td>updateProfileButton</td>
-                        <td>Mouse/Keyboard</td>
-                        <td>Save profile changes with verification</td>
+                        <td>password toggles</td>
+                        <td>Mouse</td>
+                        <td>Toggle password field visibility</td>
                     </tr>
                     <tr>
-                        <td>exportButton</td>
+                        <td>btnExportData</td>
                         <td>Mouse/Keyboard</td>
-                        <td>Create JSON export of user recipes</td>
+                        <td>File chooser dialog and JSON export</td>
                     </tr>
                     <tr>
                         <td>importButton</td>
@@ -584,19 +530,14 @@
                         <td>Load recipes from JSON file</td>
                     </tr>
                     <tr>
-                        <td>backupButton</td>
+                        <td>btnImportData</td>
                         <td>Mouse/Keyboard</td>
-                        <td>Create comprehensive data backup</td>
+                        <td>File chooser dialog and JSON import</td>
                     </tr>
                     <tr>
-                        <td>deactivateButton</td>
+                        <td>btnDeleteAccount</td>
                         <td>Mouse/Keyboard</td>
-                        <td>Temporarily disable user account</td>
-                    </tr>
-                    <tr>
-                        <td>deleteAccountButton</td>
-                        <td>Mouse/Keyboard</td>
-                        <td>Permanently delete account and data</td>
+                        <td>Multiple confirmation dialogs required</td>
                     </tr>
                 </tbody>
             </table>
