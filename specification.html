@@ -32,7 +32,7 @@
             <li>1.5 Permanent Data Required</li>
             </ul>
             <h2 id="1-1-problem-summary">1.1 Problem Summary</h2>
-            <p>The Recipe Manager is a desktop application designed to help users organize, create, edit, and manage their personal recipes in a structured and efficient manner. The primary purpose is to provide a secure, user-friendly platform for storing recipes with associated ingredients, preparation instructions, and cooking timers, using a MySQL database for data persistence. This eliminates reliance on scattered notes or external websites, enabling quick access and modifications to culinary collections.</p>
+            <p>The Recipe Manager is an application designed to help users organize, create, edit, and manage their personal recipes in a structured and efficient manner. The primary purpose is to provide a secure, user-friendly platform for storing recipes with associated ingredients, preparation instructions, and cooking timers, using a MySQL database for data persistence. This eliminates reliance on scattered notes or external websites, enabling quick access and modifications to your personal culinary collections.</p>
             <h3>Summary of Functions</h3>
             <ul>
             <li>User Authentication System: Secure sign-in/sign-up with password hashing and session management.</li>
@@ -60,9 +60,9 @@
             <li>BigOven: Offers recipe collection, community sharing, and ingredient-based search with a large user base.</li>
             <li>Apicbase: Professional-grade, cloud-based software for food businesses, providing recipe access for kitchen staff.</li>
             </ul>
-            <p>References: "The 9 Best Recipe Organizer Apps to Replace Your Cookbooks" (MakeUseOf, 2023); "Review Of The 6 Best Recipe Software Programs" (The Fun Times Guide, 2025); "The best recipe manager for iPhone, iPad, and Mac" (The Sweet Setup, 2020); "5 apps to finally organize your cooking recipes" (Popular Science, 2023); Official websites: paprikaapp.com, recipekeeperonline.com, recipesage.com, dvo.com, get.apicbase.com.</p>
+            <p>References: "The 9 Best Recipe Organizer Apps to Replace Your Cookbooks" (MakeUseOf, 2023); <br>"Review Of The 6 Best Recipe Software Programs" (The Fun Times Guide, 2025); <br>"The best recipe manager for iPhone, iPad, and Mac" (The Sweet Setup, 2020); <br>"5 apps to finally organize your cooking recipes" (Popular Science, 2023); <br>Official websites: paprikaapp.com, recipekeeperonline.com, recipesage.com, dvo.com, get.apicbase.com.</p>
             <h3>Project Motivation</h3>
-            <p>The Recipe Manager differentiates itself by addressing limitations in existing solutions:</p>
+            <p>What limitations are addressed through the Recipe Manager (What makes it different):</p>
             <ul>
             <li>Offline and Local Focus: Unlike cloud-reliant apps (e.g., Paprika, Apicbase), it uses secure, local MySQL storage for privacy and offline access.</li>
             <li>Structured Database Management: Offers relational data handling beyond simple list-based organizers.</li>
@@ -82,7 +82,7 @@
             <li>Recipe Management
                 <ul>
                 <li>Create recipes with name, category, prep time, cook time, and instructions.</li>
-                <li>View, filter, and search recipes by category, name, or instructions.</li>
+                <li>View, filter, and search recipes by category, name, cook time, total time.</li>
                 <li>Update and delete recipes.</li>
                 </ul>
             </li>
@@ -90,7 +90,6 @@
                 <ul>
                 <li>Add ingredients to recipes with name, quantity, and unit.</li>
                 <li>View, update, and delete ingredients per recipe.</li>
-                <li>Full-text search on ingredient names.</li>
                 </ul>
             </li>
             <li>File Handling
@@ -107,29 +106,61 @@
             </li>
             </ol>
             <h3>Advanced Functions</h3>
-            <ol>
-            <li>Database Integration
-                <ul>
+    <ol>
+        <li>Database Integration
+            <ul>
                 <li>MySQL connectivity with JDBC.</li>
                 <li>CRUD operations for users, recipes, ingredients.</li>
                 <li>Foreign key constraints and indexes for efficiency.</li>
                 <li>Automatic schema handling.</li>
-                </ul>
-            </li>
-            <li>Timer Functionality
-                <ul>
+                <li>Complex multi-table joins for retrieving recipes with ingredients and user-specific data.</li>
+                <li>Transaction-based operations for data integrity.</li>
+            </ul>
+        </li>
+        <li>Timer Functionality
+            <ul>
                 <li>Start countdown timers for prep or cook times.</li>
                 <li>Stop and manage timers.</li>
-                </ul>
-            </li>
-            <li>Security Features
-                <ul>
+                <li>Support for multiple concurrent timers with thread-safe operations.</li>
+                <li>Real-time callback updates and timer states (RUNNING, PAUSED, STOPPED, COMPLETED, ERROR).</li>
+            </ul>
+        </li>
+        <li>Security Features
+            <ul>
                 <li>Prepared statements to prevent SQL injection.</li>
-                <li>Password encryption.</li>
-                <li>Input validation.</li>
-                </ul>
-            </li>
-            </ol>
+                <li>Password encryption using PBKDF2 hashing with configurable iterations and salt.</li>
+                <li>Input validation at multiple layers (UI, models, and database).</li>
+                <li>Secure session management and account deactivation options.</li>
+            </ul>
+        </li>
+        <li>JSON Import/Export
+            <ul>
+                <li>JSON-based recipe export/import with complex data structures (recipes with ingredient arrays).</li>
+                <li>UTF-8 encoding support and data validation.</li>
+                <li>User-specific exports with progress tracking via callbacks.</li>
+            </ul>
+        </li>
+        <li>UI Component Interactivity
+            <ul>
+                <li>Action commands linking UI components (buttons, tables) to backend operations.</li>
+                <li>Dynamic table displays for recipes and ingredients using 2D array structures.</li>
+                <li>Asynchronous data loading and real-time search/filtering.</li>
+            </ul>
+        </li>
+        <li>Threading
+            <ul>
+                <li>Thread-safe singleton pattern for database connections (double-checked locking).</li>
+                <li>Asynchronous operations for UI responsiveness (e.g., authentication, data loading).</li>
+                <li>Concurrent timer management for multiple cooking timers.</li>
+            </ul>
+        </li>
+        <li>Inheritance
+            <ul>
+                <li>Object-oriented design with inheritance in UI components or manager classes for code reuse.</li>
+                <li>Shared functionality across UI pages (e.g., consistent styling and theming).</li>
+            </ul>
+        </li>
+    </ol>
             <h2 id="1-4-user-interface">1.4 User Interface</h2>
             <ol>
             <li>Main Application Window
@@ -142,7 +173,7 @@
             <li>Sign-In/Registration Interface
                 <ul>
                 <li>Input Fields: Username, password, email (registration).</li>
-                <li>Validation: Real-time checks and error messages.</li>
+                <li>Validation: Checks and error messages.</li>
                 <li>Security: Password masking.</li>
                 </ul>
             </li>
@@ -150,7 +181,7 @@
                 <ul>
                 <li>Recipe Table: Displays recipes with columns for name, category, times.</li>
                 <li>Category Buttons: Dynamic filters with hover effects.</li>
-                <li>Search Bar: For name or instructions.</li>
+                <li>Search Bar: For name or time requried.</li>
                 <li>Buttons: New Recipe, Settings, Export/Import.</li>
                 </ul>
             </li>
@@ -187,20 +218,27 @@
             <h3>Recipes Table - Recipe details storage</h3>
             <pre>
             recipeId (int, primary key, auto-increment): Unique identifier.
-            userId (int, foreign key references users.userId, on delete cascade): Links to owner.
+            userId (int, foreign key references users.userId, 
+                on delete cascade): Links to owner.
             name (varchar(200)): Recipe title.
-            category (varchar(50)): Classification (e.g., "Dessert", "Main").
+            category (varchar(50)): Classification (e.g., "Dessert", 
+                "Main").
             prepTime (int): Preparation minutes.
             cookTime (int): Cooking minutes.
             instructions (text): Step-by-step guide.
-            createdAt (datetime, default CURRENT_TIMESTAMP): Creation timestamp.
-            updatedAt (datetime, default CURRENT_TIMESTAMP on update): Last modification timestamp.
-            Indexes: On userId, category, createdAt (descending), name; full-text on instructions.
+            createdAt (datetime, default CURRENT_TIMESTAMP): Creation 
+                timestamp.
+            updatedAt (datetime, default CURRENT_TIMESTAMP on update): 
+                Last modification timestamp.
+            Indexes: On userId, category, createdAt (descending), 
+                name; full-text on instructions.
             </pre>
             <h3>Ingredients Table - Ingredient details storage</h3>
             <pre>
-            ingredientId (int, primary key, auto-increment): Unique identifier.
-            recipeId (int, foreign key references recipes.recipeId, on delete cascade): Links to recipe.
+            ingredientId (int, primary key, auto-increment): Unique 
+                identifier.
+            recipeId (int, foreign key references recipes.recipeId, 
+                on delete cascade): Links to recipe.
             name (varchar(100)): Ingredient name.
             quantity (decimal(10,2)): Amount.
             unit (varchar(20)): Measurement (e.g., "g", "cups").
