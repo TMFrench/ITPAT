@@ -699,8 +699,236 @@ public class FileManager {
                     </tr>
                 </tbody>
             </table>
-        </main>
 
+            <h4><b>Test Set 2: Advanced Features and Data Management</b></h4>
+            <p><b>Tester:</b> Roelof Johannes Roussow the 5th</p>
+            <p><b>Date:</b> 2025-01-15</p>
+            <p><b>Test Environment:</b> macOS 14, Java 18, MySQL 8.0</p>
+            <table>
+            <thead>
+                    <tr>
+                        <th>Test Case</th>
+                        <th>Function</th>
+                        <th>Input Data</th>
+                        <th>Expected Result</th>
+                        <th>Actual Result</th>
+                        <th>Pass/Fail</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>TC009</td>
+                        <td>Cooking Timer</td>
+                        <td>Start timer for 10 min</td>
+                        <td>Timer counts down, displays remaining time</td>
+                        <td>Timer displays correctly, updates every second</td>
+                        <td>✅ PASS</td>
+                    </tr>
+                    <tr>
+                        <td>TC010</td>
+                        <td>Timer Stop</td>
+                        <td>Stop timer at 5 minutes</td>
+                        <td>Timer ends and restarts</td>
+                        <td>Functionality works as expected</td>
+                        <td>✅ PASS</td>
+                    </tr>
+                    <tr>
+                        <td>TC011</td>
+                        <td>Multiple Timers</td>
+                        <td>Start 3 concurrent timers</td>
+                        <td>All timers run independently</td>
+                        <td>All timers tracked separately, no conflicts</td>
+                        <td>✅ PASS</td>
+                    </tr>
+                    <tr>
+                        <td>TC012</td>
+                        <td>Export Recipes</td>
+                        <td>Export all user recipes to JSON</td>
+                        <td>JSON file created with all recipes</td>
+                        <td>File generated with correct recipe data</td>
+                        <td>✅ PASS</td>
+                    </tr>
+                    <tr>
+                        <td>TC013</td>
+                        <td>Import Recipes</td>
+                        <td>Import previously exported JSON file</td>
+                        <td>Recipes imported successfully</td>
+                        <td>All recipes restored with ingredients</td>
+                        <td>✅ PASS</td>
+                    </tr>
+                    <tr>
+                        <td>TC014</td>
+                        <td>Password Change</td>
+                        <td>Old: "SecurePass123!"<br>New "NewPassword456!"</td>
+                        <td>Password updates successfully</td>
+                        <td>Login works with new password</td>
+                        <td>✅ PASS</td>
+                    </tr>
+                    <tr>
+                        <td>TC015</td>
+                        <td>Invalid Login</td>
+                        <td>Username: "textuser1"<br>Password: "wrongpassword"</td>
+                        <td>Error message displayed</td>
+                        <td>"Invalid credentials" message shown</td>
+                        <td>✅ PASS</td>
+                    </tr>
+                    <tr>
+                        <td>TC016</td>
+                        <td>Data Validation</td>
+                        <td>Recipe name: "" (empty), Save attempt</td>
+                        <td>Validation error displayed</td>
+                        <td>"Recipe name required" error shown</td>
+                        <td>✅ PASS</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4><b>Cooking Time (Integer Input)</b></h4>
+            <p><b>Variable Identified:</b> Cook Time spinner in RecipeEditorPage</p>
+            <p><b>Data Type:</b> Integer (representing minutes)</p>
+            <p><b>Vailidation Rules:</b> Must be non-negative, reasonable upper limit</p>
+
+            <p><b><br>Test Data Categories:</b></p>
+            <p><b>Standard Data:</b><ul>
+                <li>15 minutes (quick cooking)</li>
+                <li>45 minutes (average cooking)</li>
+                <li>180 minutes (slow cooking)</li>
+            </ul></p>
+            <p><b>Extreme Data:</b><ul>
+                <li>Minimum: 0 minutes</li>
+                <li>Maximum reasonable: 1440 minutes (24 hours)</li>
+                <li>Large value: 10000 minutes</li>
+            </ul></p>
+            <p><b>Abnormal Data</b><ul>
+                <li>Negative value: -30</li>
+                <li>Non-numeric: "thirty"</li>
+                <li>Decimal value: 45.5</li>
+                <li>Extremely large: 999999999</li>
+            </ul></p>
+            <p><b>Test Results:</b></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test Data</th>
+                        <th>Data Type</th>
+                        <th>Input</th>
+                        <th>Expected Result</th>
+                        <th>Actual Result</th>
+                        <th>Screenshot</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>"Chocolate Chip Cookies"</td>
+                        <td>Standard</td>
+                        <td>Valid recipe name</td>
+                        <td>Recipe saved successfully</td>
+                        <td>✅ Recipe created with correct name</td>
+                        <td><img src="screenshots/TC017.png" alt="TC017 Screenshot"></td>
+                    </tr>
+                    <tr>
+                        <td>"A"</td>
+                        <td>Extreme</td>
+                        <td>Single character</td>
+                        <td>Recipe saved successfully</td>
+                        <td>✅ Recipe accepted and saved</td>
+                        <td><img src="screenshots/TC018.png" alt="TC018 Screenshot"></td>
+                    </tr>
+                    <tr>
+                        <td>""</td>
+                        <td>Abnormal</td>
+                        <td>Validation error displayed</td>
+                        <td>✅ Error: "Recipe name is required"</td>
+                        <td><img src="screenshots/TC019.png" alt="TC019 Screenshot"></td>
+                    </tr>
+                    <tr>
+                        <td>"'; DROP TABLE recipes; --"</td>
+                        <td>Abnormal</td>
+                        <td>SQL injection</td>
+                        <td>Input sanitized, safe storage</td>
+                        <td>✅ Stored as literal text, no SQL execution</td>
+                        <td><img src="screenshots/TC020.png" alt="TC020 Screenshot"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3><b>Test Plan and Results for TWO Input Variables</b></h3>
+            <h4><b>Variable 1: Recipe Name (String Input)</b></h4>
+            <p><b>Variable Identified:</b> Recipe Name field in RecipeEditorPage</p>
+            <p><b>Data Type:</b> String (VARCHAR in database)</p>
+            <p><b>Vailidation Rules:</b> Required field, maximum length limit</p>
+
+            <p><b>Test Data Categories:</b></p>
+            <p><b>Standard Data:</b><ul>
+                <li>"Chocolate Chip Cookies"</li>
+                <li>"Beef Stir Fry"</li>
+                <li>"Ceasar Salad"</li>
+            </ul></p>
+            <p><b>Extreme Data:</b><ul>
+                <li>Single character: "A"</li>
+                <li>Maximum length: "This is a very long recipe name that tests the maximum character limit for recipe names in the database system to ensure proper handling"</li>
+                <li>Special characters: "Mom's Famous Apple Pie & Dad's BBQ Ribs (Family Recipe)"</li>
+            </ul></p>
+            <p><b>Abnormal Data</b><ul>
+                <li>Empty string: ""</li>
+                <li>Null value: null</li>
+                <li>SQL injection attempt: "'; DROP TABLE recipes; --"</li>
+            </ul></p>
+            <p><b>Test Results:</b></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test Data</th>
+                        <th>Data Type</th>
+                        <th>Input</th>
+                        <th>Expected Result</th>
+                        <th>Actual Result</th>
+                        <th>Screenshot</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>45</td>
+                        <td>Standard</td>
+                        <td>Valid cooking time</td>
+                        <td>Recipe saved with 45 min cook time</td>
+                        <td>✅ Time stored and displayed correctly</td>
+                        <td><img src="screenshots/TC017.png" alt="TC017 Screenshot"></td>
+                    </tr>
+                    <tr>
+                        <td>0</td>
+                        <td>Extreme</td>
+                        <td>Minimum valid value</td>
+                        <td>Recipe saved with 0 min cook time</td>
+                        <td>✅ Zero time accepted for no-cook recipes</td>
+                        <td><img src="screenshots/TC018.png" alt="TC018 Screenshot"></td>
+                    </tr>
+                    <tr>
+                        <td>-30</td>
+                        <td>Abnormal</td>
+                        <td>Negative Value</td>
+                        <td>Validation error or auto-correction</td>
+                        <td>✅ Spinner prevents negative values</td>
+                        <td><img src="screenshots/TC019.png" alt="TC019 Screenshot"></td>
+                    </tr>
+                    <tr>
+                        <td>99999999999999999</td>
+                        <td>Abnormal</td>
+                        <td>Extremely large value</td>
+                        <td>Value capped or validation error</td>
+                        <td>✅ Large values handled, may show unrealistic total time as is only capped at 999min elsewise it resets to previous value</td>
+                        <td><img src="screenshots/TC020.png" alt="TC020 Screenshot"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4><strong>Recommendations:</strong></h4><p><ol>
+                <li> Add maximum length validation display for recipe names</li>
+                <li> Implement upper bounds checking for cooking times with user warnings</li>
+                <li> Consider adding input format hints for better user experience</li>
+                <li> Enhance validation messages to be more specific about requirements</li>
+            </ol></p>
+        </main>
         <footer>
             <p>&copy; 2025 Daniel French</p>
         </footer>
