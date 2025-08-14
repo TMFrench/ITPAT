@@ -46,6 +46,8 @@ body {
     color: var(--text-primary);
     background: linear-gradient(135deg, var(--background-secondary) 0%, var(--background-tertiary) 100%);
     min-height: 100vh;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .container {
@@ -55,6 +57,8 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 /* Header Styles */
@@ -65,6 +69,8 @@ header {
     padding: var(--spacing-xl);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-medium);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 header h1 {
@@ -73,6 +79,7 @@ header h1 {
     color: var(--text-primary);
     margin-bottom: var(--spacing-sm);
     letter-spacing: -0.5px;
+    word-wrap: break-word;
 }
 
 .subtitle {
@@ -80,6 +87,7 @@ header h1 {
     font-size: 1.1rem;
     font-weight: 400;
     margin-bottom: var(--spacing-xl);
+    word-wrap: break-word;
 }
 
 /* Navigation Styles */
@@ -111,6 +119,7 @@ header h1 {
     font-weight: 500;
     transition: all 0.3s ease;
     box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+    word-wrap: break-word;
 }
 
 .main-nav a:hover {
@@ -131,16 +140,19 @@ header h1 {
     box-shadow: 0 4px 8px rgba(40, 167, 69, 0.4);
 }
 
-/* Main Content */
+/* Main Content - Fixed Container Behavior */
 main {
     flex: 1;
     margin: 0 auto;
     width: 100%;
+    max-width: 100%;
     background: #000;
     color: #fff;
     padding: 20px;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-medium);
+    box-sizing: border-box;
+    overflow-x: hidden; /* Prevent main container from overflowing */
 }
 
 /* Navigation Grid for Homepage */
@@ -163,6 +175,8 @@ main {
     border: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .nav-card::before {
@@ -191,17 +205,21 @@ main {
     margin-bottom: var(--spacing-sm);
     color: var(--text-primary);
     font-weight: 500;
+    word-wrap: break-word;
 }
 
 .nav-card p {
     color: var(--text-secondary);
     font-size: 0.95rem;
     line-height: 1.5;
+    word-wrap: break-word;
 }
 
 /* Typography */
 h1, h2, h3, h4 {
     color: var(--text-primary);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 main h1 {
@@ -210,6 +228,7 @@ main h1 {
     border-bottom: 2px solid var(--border-color);
     padding-bottom: 0.5em;
     position: relative;
+    word-wrap: break-word;
 }
 
 main h1::after {
@@ -229,6 +248,7 @@ h2 {
     border-bottom: 2px solid var(--border-color);
     padding-bottom: 0.5em;
     position: relative;
+    word-wrap: break-word;
 }
 
 h2::after {
@@ -245,27 +265,36 @@ h3 {
     font-size: 1.4em;
     margin-top: var(--spacing-lg);
     margin-bottom: 0.75rem;
+    word-wrap: break-word;
 }
 
 h4 {
     font-size: 1.2em;
     margin-top: var(--spacing-md);
     margin-bottom: var(--spacing-sm);
+    word-wrap: break-word;
 }
 
 p {
     margin-bottom: var(--spacing-md);
     line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 /* Lists */
 ul, ol {
     margin-bottom: var(--spacing-md);
     padding-left: var(--spacing-xl);
+    word-wrap: break-word;
+    max-width: 100%;
 }
 
 li {
     margin-bottom: var(--spacing-sm);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 /* Buttons */
@@ -282,6 +311,8 @@ li {
     box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
     border: none;
     cursor: pointer;
+    word-wrap: break-word;
+    box-sizing: border-box;
 }
 
 .btn:hover {
@@ -300,6 +331,9 @@ footer {
     background: var(--background-primary);
     border-radius: var(--radius-lg);
     box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    box-sizing: border-box;
+    word-wrap: break-word;
 }
 
 /* Feature Grid */
@@ -308,6 +342,8 @@ footer {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: var(--spacing-lg);
     margin: 30px 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .feature-card {
@@ -319,6 +355,8 @@ footer {
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .feature-card::before {
@@ -344,39 +382,54 @@ footer {
     margin: 20px 0;
     border-left: 4px solid var(--primary-color);
     box-shadow: var(--shadow-light);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
 }
 
-/* Tables */
+/* Tables - Fixed Container Behavior */
 .table-container {
+    width: 100%;
+    max-width: 100%;
     overflow-x: auto;
     margin: 20px 0;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-light);
+    box-sizing: border-box;
 }
 
 table {
     width: 100%;
+    min-width: 600px; /* Minimum width before scrolling kicks in */
     border-collapse: collapse;
     background: var(--background-primary);
+    box-sizing: border-box;
 }
 
 th, td {
     padding: 12px 15px;
     text-align: left;
-    border-bottom: 1px solid var(--border-color);
+    border: 1px solid var(--border-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 200px; /* Prevent extremely wide cells */
+    box-sizing: border-box;
 }
 
 th {
     background-color: var(--background-secondary);
     font-weight: 600;
     color: var(--text-primary);
+    white-space: nowrap;
 }
 
 tr:hover {
     background-color: var(--background-secondary);
 }
 
-/* Code Blocks */
+/* Code Blocks - Fixed Container Behavior */
 .code-block {
     background: var(--background-secondary);
     padding: var(--spacing-lg);
@@ -388,6 +441,21 @@ tr:hover {
     box-shadow: var(--shadow-light);
     font-size: 0.9em;
     line-height: 1.4;
+    white-space: pre;
+    word-wrap: normal;
+    overflow-wrap: normal;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Ensure code blocks don't break container */
+.code-block code {
+    display: block;
+    white-space: pre;
+    overflow-x: auto;
+    word-wrap: normal;
+    overflow-wrap: normal;
 }
 
 .layout-diagram {
@@ -401,11 +469,18 @@ tr:hover {
     box-shadow: var(--shadow-light);
     font-size: 0.9em;
     line-height: 1.4;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    word-wrap: normal;
+    overflow-wrap: normal;
 }
 
 /* Sections */
 section {
     margin-bottom: var(--spacing-xl);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Enhanced Mermaid Diagram Support */
@@ -417,6 +492,9 @@ section {
     background: var(--background-primary);
     box-shadow: var(--shadow-medium);
     overflow-x: auto;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
 }
 
 .mermaid {
@@ -425,6 +503,10 @@ section {
     border: none;
     box-shadow: none;
     padding: 0;
+    overflow-x: auto;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
 }
 
 .mermaid::before {
@@ -450,6 +532,7 @@ section {
     justify-content: flex-end;
     margin-bottom: var(--spacing-md);
     gap: var(--spacing-md);
+    flex-wrap: wrap;
 }
 
 .zoom-toggle {
@@ -618,6 +701,8 @@ input:checked + .slider:before {
 /* Mermaid container with title */
 .diagram-container {
     margin: 30px 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .diagram-title {
@@ -629,6 +714,7 @@ input:checked + .slider:before {
     padding-bottom: var(--spacing-sm);
     border-bottom: 2px solid var(--border-color);
     position: relative;
+    word-wrap: break-word;
 }
 
 .diagram-title::after {
@@ -642,10 +728,77 @@ input:checked + .slider:before {
     background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
 }
 
+/* Pre and code elements - ensure proper containment */
+pre {
+    background: var(--background-secondary);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: 20px 0;
+    font-family: var(--font-mono);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-light);
+    font-size: 0.9em;
+    line-height: 1.4;
+    white-space: pre;
+    word-wrap: normal;
+    overflow-wrap: normal;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+}
+
+code {
+    font-family: var(--font-mono);
+    background: var(--background-secondary);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 0.9em;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+pre code {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    display: block;
+    white-space: pre;
+    overflow-x: auto;
+    word-wrap: normal;
+    overflow-wrap: normal;
+}
+
+/* Image responsiveness */
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-light);
+}
+
+/* Iframe responsiveness */
+iframe {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Generic content containers */
+.content-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    box-sizing: border-box;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .container {
         padding: var(--spacing-md);
+    }
+    
+    header {
+        padding: var(--spacing-lg);
     }
     
     header h1 {
@@ -678,6 +831,7 @@ input:checked + .slider:before {
     
     .feature-grid {
         grid-template-columns: 1fr;
+        gap: var(--spacing-md);
     }
     
     main h1 {
@@ -691,6 +845,27 @@ input:checked + .slider:before {
     .mermaid {
         padding: var(--spacing-md);
         margin: 20px 0;
+    }
+    
+    .mermaid-container {
+        padding: var(--spacing-lg);
+    }
+    
+    .code-block,
+    .layout-diagram,
+    pre {
+        padding: var(--spacing-lg);
+        font-size: 0.8em;
+    }
+    
+    .table-container {
+        margin: var(--spacing-md) 0;
+    }
+    
+    th, td {
+        padding: 8px 10px;
+        font-size: 0.9em;
+        max-width: 150px;
     }
 }
 
@@ -717,14 +892,76 @@ input:checked + .slider:before {
     }
     
     .mermaid {
-        padding: var(--spacing-md);
+        padding: var(--spacing-sm);
         margin: var(--spacing-md) 0;
     }
     
-    .code-block,
-    .layout-diagram {
+    .mermaid-container {
         padding: var(--spacing-md);
+    }
+    
+    .code-block,
+    .layout-diagram,
+    pre {
+        padding: var(--spacing-md);
+        font-size: 0.75em;
+    }
+    
+    .feature-card,
+    .nav-card {
+        padding: var(--spacing-md);
+    }
+    
+    .highlight {
+        padding: var(--spacing-md);
+    }
+    
+    th, td {
+        padding: 6px 8px;
         font-size: 0.8em;
+        max-width: 120px;
+    }
+    
+    .btn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 320px) {
+    .container {
+        padding: var(--spacing-xs);
+    }
+    
+    header {
+        padding: var(--spacing-sm);
+    }
+    
+    header h1 {
+        font-size: 1.5rem;
+    }
+    
+    main {
+        padding: var(--spacing-sm);
+    }
+    
+    .code-block,
+    .layout-diagram,
+    pre {
+        padding: var(--spacing-sm);
+        font-size: 0.7em;
+        line-height: 1.3;
+    }
+    
+    th, td {
+        padding: 4px 6px;
+        font-size: 0.75em;
+        max-width: 100px;
+    }
+    
+    .mermaid-container {
+        padding: var(--spacing-sm);
     }
 }
 
@@ -736,6 +973,8 @@ input:checked + .slider:before {
     
     .container {
         box-shadow: none;
+        max-width: none;
+        padding: 0;
     }
     
     header,
@@ -751,12 +990,23 @@ input:checked + .slider:before {
         box-shadow: none;
     }
     
-    .mermaid {
+    .mermaid,
+    .code-block,
+    .table-container {
         break-inside: avoid;
+        overflow: visible;
+    }
+    
+    .code-block,
+    .layout-diagram,
+    pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
 }
 
-/* Dark mode support (optional) */
+/* Dark mode support */
 @media (prefers-color-scheme: dark) {
     :root {
         --text-primary: #f8f9fa;
