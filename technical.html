@@ -524,29 +524,178 @@ public class FileManager {
             <hr>
 
             <h2 id="testing-document">4.2 TESTING DOCUMENT</h2>
+            <h3>4.2.1 Evaluation of Programmed Solution</h3>
+            <h4>Thorough Evaluation Against All Functions</h4>
+            <p><b>User Management & Authentication</b></p>
+            <p><b>✅ Strengths:</b><ul>
+                <li>Robust PBKDF2 password hashing with salt (10,000 iterations)</li>
+                <li>Comprehensive input validation for usernames, emails, and passwords</li>
+                <li>Secure login validation with UserOperationResult feedback</li>
+                <li>Account creation with duplicate checking</li>
+            </ul></p>
+            <p><b>❌ Potential Improvements:</b><ul>
+                <li>No password reset functionality implemented</li>
+                <li>Missing two-factor authentication for enhanced security</li>
+                <li>No account lockout after multiple failed login attempts</li>
+            </ul></p>
+            <p><b>Recipe Management (CRUD Operations)</b></p>
+            <p><b>✅ Strengths:</b><ul>
+                <li>Complete CRUD operations with transaction support</li>
+                <li>Search functionality with flexible terms</li>
+                <li>Category-based filtering system</li>
+                <li>User-specific recipe isolation</li>
+            </ul></p>
+            <p><b>❌ Potential Improvements:</b><ul>
+                <li>No recipe sharing between users</li>
+                <li>Missing recipe rating/review system</li>
+                <li>No bulk operations for recipe management</li>
+                <li>Limited advanced search filters (e.g., by cooking time ranges)</li>
+            </ul></p>
+            <p><b>Ingredient Management</b></p>
+            <p><b>✅ Strengths:</b><ul>
+                <li>Referential integrity with cascading deletes</li>
+                <li>Batch ingredient operations within transactions</li>
+                <li>Standardized unit measurements</li>
+                <li>Ingredient count tracking per recipe</li>
+            </ul></p>
+            <p><b>❌ Potential Improvements:</b><ul>
+                <li>No ingredient substitution suggestions</li>
+                <li>Missing nutritional information tracking</li>
+                <li>No automatic unit conversion</li>
+                <li>Limited ingredient categorization</li>
+            </ul></p>
+            <p><b>Timer Functionality</b></p>
+            <p><b>✅ Strengths:</b><ul>
+                <li>Multiple concurrent timers support</li>
+                <li>Thread-safe operations with proper state management</li>
+                <li>Real-time callback updates</li>
+                <li>Comprehensive timer states (RUNNING, PAUSED, STOPPED, COMPLETED, ERROR)</li>
+            </ul></p>
+            <p><b>❌ Potential Improvements:</b><ul>
+                <li>No audio alerts when timers complete</li>
+                <li>Missing timer presets for common cooking tasks</li>
+                <li>No integration with recipe steps for automatic timer suggestions</li>
+            </ul></p>
+            <p><b>Data Import/Export</b></p>
+            <p><b>✅ Strengths:</b><ul>
+                <li>JSON-based export/import with UTF-8 encoding</li>
+                <li>Progress tracking via callback interface</li>
+                <li>Data validation and integrity checking</li>
+                <li>Export statistics and metadata</li>
+            </ul></p>
+            <p><b>❌ Potential Improvements:</b><ul>
+                <li>Limited to JSON format only (no CSV, PDF, or other formats)</li>
+                <li>No cloud backup integration</li>
+                <li>Missing recipe image export/import</li>
+                <li>No selective import options</li>
+            </ul></p>
+            <p><b>User Interface</b></p>
+            <p><b>✅ Strengths:</b><ul>
+                <li>Intuitive navigation flow with consistent styling</li>
+                <li>Asynchronous operations maintaining UI responsiveness</li>
+                <li>Real-time search and filtering</li>
+                <li>Comprehensive error handling and user feedback</li>
+            </ul></p>
+            <p><b>❌ Potential Improvements:</b><ul>
+                <li>No dark mode implementation (commented out in SettingsPage)</li>
+                <li>Missing accessibility features (screen reader support)</li>
+                <li>No mobile-responsive design</li>
+                <li>Limited customization options for UI themes</li>
+            </ul></p>
+            <p><b>Database Architecture</b></p>
+            <p><b>✅ Strengths:</b><ul>
+                <li>Proper foreign key constraints with cascading deletes</li>
+                <li>Parameterized queries preventing SQL injection</li>
+                <li>Connection pooling and transaction support</li>
+                <li>Automatic table initialization</li>
+            </ul></p>
+            <p><b>❌ Potential Improvements:</b><ul>
+                <li>No database backup/restore functionality</li>
+                <li>Missing data archiving for old recipes</li>
+                <li>No performance optimization for large datasets</li>
+                <li>Limited database migration support for schema changes</li>
+            </ul></p>
+
+            <h3><b>4.2.2 Functional Testing</b></h3>
+            <h4><b>Test Set 1: User Authentication and Recipe Management</b></h4>
+            <p><b>Tester:</b> Keagan Elliot</p>
+            <p><b>Date:</b> 2025-01-15</p>
+            <p><b>Test Environment:</b> Windows 11, Java 17, MySQL 8.0</p>
             <table>
-                <thead>
+            <thead>
                     <tr>
-                        <th>Criterion</th>
-                        <th>Max Marks</th>
-                        <th>To Get Full Marks</th>
+                        <th>Test Case</th>
+                        <th>Function</th>
+                        <th>Input Data</th>
+                        <th>Expected Result</th>
+                        <th>Actual Result</th>
+                        <th>Pass/Fail</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><strong>4.2.1 Evaluation of Programmed Solution</strong></td>
-                        <td>2</td>
-                        <td>- Thorough evaluation against all functions in Section 1.3<br>- Include suggestions for failures or improvements</td>
+                        <td>TC001</td>
+                        <td>User Registration</td>
+                        <td>Username:"testuser1"<br>Email: "test@email.com"<br>Password: "SecurePass123!"</td>
+                        <td>User created successfully, redirected to login</td>
+                        <td>User created, login page displayed</td>
+                        <td>✅ PASS</td>
                     </tr>
                     <tr>
-                        <td><strong>4.2.2 Functional Testing</strong></td>
-                        <td>3</td>
-                        <td>- At least <strong>two</strong> sets of functional tests<br>- Each test includes:<br>  - Tester’s name<br>  - Date<br>  - Test result<br>- Tests show progress and whether function works</td>
+                        <td>TC002</td>
+                        <td>User Login</td>
+                        <td>Username:"testuser1"<br>Email: "test@email.com"<br>Password: "SecurePass123!"</td>
+                        <td>Successful login, HomePage displayed</td>
+                        <td>Homepage loaded with user recipes</td>
+                        <td>✅ PASS</td>
                     </tr>
                     <tr>
-                        <td><strong>4.2.3 Test Plan and Results for TWO Input Variables</strong></td>
-                        <td>2</td>
-                        <td>- Two variables clearly identified<br>- Standard, extreme, and abnormal data used<br>- Screenshots before and after tests included for <strong>each</strong> variable</td>
+                        <td>TC003</td>
+                        <td>Add New Recipe</td>
+                        <td>Name:"Chocolate Cake"<br>Category: "Dessert"<br>Prep: 30min, Cook: 45min</td>
+                        <td>Recipe saved to database</td>
+                        <td>Recipe appears in table with correct details</td>
+                        <td>✅ PASS</td>
+                    </tr>
+                    <tr>
+                        <td>TC004</td>
+                        <td>Edit Recipe</td>
+                        <td>Modify prep time from 30 to 35 minutes</td>
+                        <td>Recipe updated in database</td>
+                        <td>Updated time reflected in recipe table</td>
+                        <td>✅ PASS</td>
+                    </tr>
+                    <tr>
+                        <td>TC005</td>
+                        <td>Delete Recipe</td>
+                        <td>Select recipe and click delete</td>
+                        <td>Recipe removed from database</td>
+                        <td>Recipe no longer appears in table</td>
+                        <td>✅ PASS</td>
+                    </tr>
+                    <tr>
+                        <td>TC006</td>
+                        <td>Recipe Search</td>
+                        <td>Search term: "Chocolate"</td>
+                        <td>Filtered results showing matching recipes</td>
+                        <td>Only "Ckocolate Cake" displayed</td>
+                        <td>✅ PASS</td>
+                    </tr>
+                    <tr>
+                        <td>TC007</td>
+                        <td>Category Filter</td>
+                        <td>Select "Dessert" category</td>
+                        <td>Show only dessert recipes</td>
+                        <td>Table filtered to show only dessert items</td>
+                        <td>✅ PASS</td>
+                    </tr>
+                    <tr>
+                        <td>TC008</td>
+                        <td>Add Ingredients</td>
+                        <td>Recipe: "Chocolate Cake"<br>Ingredients:"2 cups flour", "1 cup sugar"</td>
+                        <td>Ingredients saved with recipe</td>
+                        <td>Ingredients table populated correctly</td>
+                        <td>✅ PASS</td>
                     </tr>
                 </tbody>
             </table>
