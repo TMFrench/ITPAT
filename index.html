@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Manager - Daniel French</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Color Variables */
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --success-dark: #1e7e34;
+            --text-primary: #2c3e50;
+            --text-secondary: #6c757d;
+            --background-primary: #ffffff;
+            --background-secondary: #f8f9fa;
+            --background-tertiary: #e9ecef;
+            --border-color: #e9ecef;
+            --shadow-light: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --shadow-heavy: 0 8px 25px rgba(0, 123, 255, 0.1);
+            
+            /* Typography */
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            
+            /* Spacing */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-xxl: 3rem;
+            
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, var(--background-secondary) 0%, var(--background-tertiary) 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        header {
+            text-align: center;
+            margin-bottom: var(--spacing-xxl);
+            background: var(--background-primary);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-medium);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: var(--spacing-xxl);
+            background: var(--background-primary);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-medium);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .welcome-section h2 {
+            font-size: 2rem;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+            font-weight: 400;
+        }
+
+        .welcome-section p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* Navigation Grid for Homepage */
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-xl);
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .nav-card {
+            background: var(--background-primary);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            text-decoration: none;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-medium);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            display: block;
+        }
+
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-heavy);
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .nav-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .nav-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .nav-card p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 0;
+        }
+
+        /* Special styling for Testing card */
+        .nav-card.testing-card::before {
+            background: linear-gradient(90deg, var(--success-color), var(--success-dark));
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: var(--spacing-xxl);
+            padding: var(--spacing-xl);
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--spacing-md);
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .welcome-section h2 {
+                font-size: 1.6rem;
+            }
+            
+            .welcome-section p {
+                font-size: 1rem;
+            }
+            
+            .nav-grid {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-md);
+            }
+            
+            .nav-card {
+                padding: var(--spacing-lg);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--spacing-sm);
+            }
+            
+            header {
+                padding: var(--spacing-md);
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .welcome-section {
+                padding: var(--spacing-md);
+            }
+            
+            .welcome-section h2 {
+                font-size: 1.4rem;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --text-primary: #f8f9fa;
+                --text-secondary: #adb5bd;
+                --background-primary: #212529;
+                --background-secondary: #343a40;
+                --background-tertiary: #495057;
+                --border-color: #495057;
+            }
+            
+            body {
+                background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Recipe Manager</h1>
+            <p class="subtitle">Daniel French</p>
+        </header>
+        
+        <main>
+            <div class="welcome-section">
+                <h2>Project Documentation</h2>
+                <p>Navigate through the different sections of the Recipe Manager project development process. Each section contains detailed information about the planning, design, development, and testing phases.</p>
+            </div>
+
+            <div class="nav-grid">
+                <a href="specification.html" class="nav-card">
+                    <h3>Specification</h3>
+                    <p>Project requirements, objectives, success criteria, and detailed planning documentation for the Recipe Manager application.</p>
+                </a>
+
+                <a href="design.html" class="nav-card">
+                    <h3>Design</h3>
+                    <p>User interface mockups, system architecture, database design, and visual design decisions for the application.</p>
+                </a>
+
+                <a href="coding.html" class="nav-card">
+                    <h3>Development</h3>
+                    <p>Implementation details, code structure, development process, and technical decisions made during the coding phase.</p>
+                </a>
+
+                <a href="technical.html" class="nav-card testing-card">
+                    <h3>Testing</h3>
+                    <p>Testing strategies, test cases, quality assurance processes, and evaluation of the finished application.</p>
+                </a>
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 Daniel French</p>
+        </footer>
+    </div>
+</body>
+</html>
